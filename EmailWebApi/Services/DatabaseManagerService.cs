@@ -75,7 +75,7 @@ namespace EmailWebApi.Services
 
         public ThrottlingState GetLastThrottlingState()
         {
-            return context.ThrottlingStates.OrderBy(x => x.EndPoint).ToList().FirstOrDefault();
+            return context.ThrottlingStates.OrderByDescending(x => x.Id).ToList().FirstOrDefault();
         }
 
         public void UpdateEmail(Email email)

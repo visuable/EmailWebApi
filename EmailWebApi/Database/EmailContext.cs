@@ -17,6 +17,14 @@ namespace EmailWebApi.Database
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ThrottlingState>().HasData(new ThrottlingState()
+            {
+                Counter = 0,
+                EndPoint = DateTime.Now.AddSeconds(60),
+                LastAddress = string.Empty,
+                LastAddressCounter = 0,
+                Id = 1
+            });
         }
     }
 }

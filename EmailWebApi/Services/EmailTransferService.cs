@@ -40,7 +40,7 @@ namespace EmailWebApi.Services
         {
             if(email.State.Status == EmailStatus.Query)
             {
-                if(email.Id == -1)
+                if(email.Id == 0)
                 {
                     _logger.LogError("Ошибка троттлинг функции");
                     throw new Exception();
@@ -58,7 +58,7 @@ namespace EmailWebApi.Services
             }
             else if(email.State.Status == EmailStatus.None)
             {
-                if(email.Id == -1)
+                if(email.Id == 0)
                 {
                     email.Info = new EmailInfo()
                     {
