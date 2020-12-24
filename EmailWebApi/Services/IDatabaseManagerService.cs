@@ -1,8 +1,5 @@
-﻿using EmailWebApi.Objects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using EmailWebApi.Objects;
 
 namespace EmailWebApi.Services
 {
@@ -10,11 +7,12 @@ namespace EmailWebApi.Services
     {
         void AddEmail(Email email);
         Email GetEmailByEmailInfo(EmailInfo info);
-        int GetCountByStatus(EmailStatus status);
+        int GetCountByStatus(string status);
         void UpdateEmail(Email email);
         Email GetEmailById(int id);
         ThrottlingState GetLastThrottlingState();
         void AddThrottlingState(ThrottlingState state);
-        List<Email> GetEmailsByStatus(EmailStatus status);
+        List<Email> GetEmailsByStatus(string status);
+        string GetEmailStateById(int id);
     }
 }

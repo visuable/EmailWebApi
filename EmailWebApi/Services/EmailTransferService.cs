@@ -1,32 +1,33 @@
-﻿using EmailWebApi.Objects;
-using EmailWebApi.Objects.Settings;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Threading.Tasks;
+using EmailWebApi.Extensions;
+using EmailWebApi.Objects;
+using EmailWebApi.Objects.Settings;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace EmailWebApi.Services
 {
     public class EmailTransferService : IEmailTransferService
     {
-        private IDatabaseManagerService _manager;
-        private IOptions<SmtpSettings> _options;
-        private ILogger<EmailTransferService> _logger;
+        private readonly ILogger<EmailTransferService> _logger;
+        private readonly IDatabaseManagerService _manager;
+        private readonly IOptions<SmtpSettings> _options;
 
-        private SmtpClient client;
-        public EmailTransferService(IDatabaseManagerService manager, IOptions<SmtpSettings> options, ILogger<EmailTransferService> logger)
+        private readonly SmtpClient client;
+
+        public EmailTransferService(IDatabaseManagerService manager, IOptions<SmtpSettings> options,
+            ILogger<EmailTransferService> logger)
         {
             _manager = manager;
             _options = options;
             _logger = logger;
             var value = _options.Value;
-            client = new SmtpClient()
+            client = new SmtpClient
             {
-                Credentials = new NetworkCredential()
+                Credentials = new NetworkCredential
                 {
                     UserName = value.Username,
                     Password = value.Password
@@ -36,79 +37,53 @@ namespace EmailWebApi.Services
                 Port = value.Port
             };
         }
+
         public Email Send(Email email)
         {
-            if(email.State.Status == EmailStatus.Query)
+            if (email.State.Status == EmailStatus.Query)
             {
-                if(email.Id == 0)
-                {
-                    _logger.LogError("Ошибка троттлинг функции");
-                    throw new Exception();
-                }
-                else
-                {
-                    email.Info = new EmailInfo()
-                    {
-                        Date = DateTime.Now,
-                        UniversalId = Guid.NewGuid()
-                    };
-                    _manager.AddEmail(email);
-                    return email;
-                }
+                email.SetEmailInfo();
+                _manager.AddEmail(email);
+                return email;
             }
-            else if(email.State.Status == EmailStatus.None)
+
+            if (email.State.Status == EmailStatus.None)
             {
-                if(email.Id == 0)
+                if (email.Id == 0)
                 {
-                    email.Info = new EmailInfo()
-                    {
-                        UniversalId = Guid.NewGuid(),
-                        Date = DateTime.Now
-                    };
+                    email.SetEmailInfo();
                     _manager.AddEmail(email);
                     return SendEmail(email);
                 }
-                else
+                var dbEmail = _manager.GetEmailsByStatus(EmailStatus.Query).FirstOrDefault(x => x.Id == email.Id)?.State.Status;
+                if (dbEmail == EmailStatus.Query)
                 {
-                    email = _manager.GetEmailById(email.Id);
-                    if(email == null)
-                    {
-                        _logger.LogError("Ошибка получения сообщения");
-                        throw new Exception();
-                    }
-                    else
-                    {
-                        if(email.State.Status == EmailStatus.Query)
-                        {
-                            return SendEmail(email);
-                        }
-                        else
-                        {
-                            _logger.LogError("Ошибка валидации сообщения");
-                            throw new Exception();
-                        }
-                    }
+                    return SendEmail(email);
                 }
+
+                _logger.LogError("Ошибка валидации сообщения");
+                throw new Exception();
             }
-            else
-            {
-                return email;
-            }
+
+            return email;
         }
+
         private Email SendEmail(Email email)
         {
             try
             {
-                client.Send(_options.Value.SenderEmail, email.Content.Address, email.Content.Title, email.Content.Body.Body);
-                email.Info.Date = DateTime.Now;
-                email.State.Status = EmailStatus.Sent;
+                client.Send(_options.Value.SenderEmail, email.Content.Address, email.Content.Title,
+                    email.Content.Body.Body);
+                email.UpdateEmailDate();
+                email.SetState(EmailStatus.Sent);
                 _logger.LogInformation("Сообщение отправлено");
             }
             catch
             {
-                email.Info.Date = DateTime.Now;
-                email.State.Status = EmailStatus.Error;
+                email.UpdateEmailDate();
+                email.SetState(EmailStatus.Error);
             }
+
             _manager.UpdateEmail(email);
             return email;
         }

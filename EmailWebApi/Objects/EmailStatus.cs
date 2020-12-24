@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace EmailWebApi.Objects
+﻿namespace EmailWebApi.Objects
 {
-    public enum EmailStatus
+    public class EmailStatus
     {
-        Error,
-        Sent,
-        Query,
-        None
+        public const string Error = "Error";
+        public const string Sent = "Sent";
+        public const string Query = "Query";
+        public const string None = "None";
     }
 }
