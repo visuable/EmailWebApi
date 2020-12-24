@@ -1,12 +1,13 @@
-﻿using System;
+﻿using EmailWebApi.Objects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace EmailWebApi.Services
 {
-    public interface IThrottlerService<TResult>
+    public interface IEmailTransferService
     {
-        Task<Guid> Invoke(Task<TResult> func);
+        Email Send(Email email);
     }
 }

@@ -2,53 +2,62 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using EmailWebApi.Models;
-using EmailWebApi.Models.Controllers;
-using EmailWebApi.Models.Dto;
+using EmailWebApi.Objects;
 using EmailWebApi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace EmailWebApi.Controllers
 {
-    [Produces("application/json")]
+    [Route("api/[controller]")]
     [ApiController]
     public class EmailController : ControllerBase
     {
-        private IEmailService _service;
-        private IThrottlerService<Guid> _throttlerService;
-        private IMapper _mapper;
-        public EmailController(IEmailService service, IMapper mapper, IThrottlerService<Guid> throttlerService)
+        private IThrottlingService _throttlingService;
+        private IStatusService _statusService;
+        private ILogger<EmailController> _logger;
+        public EmailController(IThrottlingService throttlingService, IStatusService statusService, ILogger<EmailController> logger)
         {
-            _service = service;
-            _mapper = mapper;
-            _throttlerService = throttlerService;
+            _throttlingService = throttlingService;
+            _statusService = statusService;
+            _logger = logger;
         }
-        [Route(nameof(SendEmail))]
         [HttpPost]
-        public async Task<IActionResult> SendEmail([FromBody] JsonRequest<EmailDto> request)
+        [Route(nameof(Send))]
+        public IActionResult Send(JsonRequest<EmailDto> request)
         {
-            //var result = _service.SendEmail(_mapper.Map<Email>(request.Value));
-            var result = _throttlerService.Invoke(_service.SendEmail(_mapper.Map<Email>(request.Value)));
-            var response = new JsonResponse<Guid>(await result);
-            return Ok(response);
+            var result = _throttlingService.Invoke(new Email()
+            {
+                Content = request.Input.Content
+            });
+            _logger.LogInformation("Сообщение отправлено");
+            return Ok(new JsonResponse<List<Email>>()
+            {
+                Output = result
+            });
         }
-        [Route(nameof(GetEmailStatus))]
         [HttpPost]
-        public IActionResult GetEmailStatus(JsonRequest<Guid> request)
+        [Route(nameof(GetEmailState))]
+        public IActionResult GetEmailState(JsonRequest<EmailInfo> request)
         {
-            var result = _service.GetEmailStatus(request.Value);
-            var response = new JsonResponse<EmailDto>(_mapper.Map<EmailDto>(result));
-            return Ok(response);
+            var result = _statusService.GetEmailState(request.Input);
+            _logger.LogInformation("Статус сообщения получен");
+            return Ok(new JsonResponse<EmailState>()
+            {
+                Output = result
+            });
         }
-        [Route(nameof(GetCurrentStatus))]
         [HttpPost]
-        public IActionResult GetCurrentStatus()
+        [Route(nameof(GetApplicationState))]
+        public IActionResult GetApplicationState()
         {
-            var result = _service.GetCurrentStatus();
-            var response = new JsonResponse<StatusModelDto>(_mapper.Map<StatusModelDto>(result));
-            return Ok(response);
+            var result = _statusService.GetApplicationState();
+            _logger.LogInformation("Возвращено состояние приложение");
+            return Ok(new JsonResponse<ApplicationState>()
+            {
+                Output = result
+            });
         }
     }
 }

@@ -5,9 +5,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using EmailWebApi.Database;
-using EmailWebApi.Helpers.Profiles;
+using EmailWebApi.Objects.Settings;
 using EmailWebApi.Services;
-using EmailWebApi.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -33,15 +32,15 @@ namespace EmailWebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IDatabaseManager, DatabaseManager>();
-            services.AddDbContext<EmailContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<IStatusService, StatusService>();
+            services.AddScoped<IThrottlingService, ThrottlingService>();
+            services.AddScoped<IDatabaseManagerService, DatabaseManagerService>();
+            services.AddScoped<IEmailTransferService, EmailTransferService>();
             services.AddLogging();
-            services.AddAutoMapper(typeof(Startup));
             services.AddOptions();
             services.Configure<SmtpSettings>(Configuration.GetSection("SmtpSettings"));
-            services.Configure<ThrottlerSettings>(Configuration.GetSection("Throttler"));
-            services.AddSingleton<IThrottlerService<Guid>, ThrottlerService>();
+            services.Configure<ThrottlingSettings>(Configuration.GetSection("ThrottlingSettings"));
+            services.AddDbContext<EmailContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
