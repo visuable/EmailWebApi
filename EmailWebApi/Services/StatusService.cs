@@ -19,7 +19,7 @@ namespace EmailWebApi.Services
             _logger.LogInformation("Возвращен статус приложения");
             return new ApplicationState
             {
-                Total = _databaseService.GetCountByStatus(EmailStatus.None),
+                Total = _databaseService.GetAll().Count,
                 Error = _databaseService.GetCountByStatus(EmailStatus.Error),
                 Query = _databaseService.GetCountByStatus(EmailStatus.Query),
                 Sent = _databaseService.GetCountByStatus(EmailStatus.Sent)
@@ -29,7 +29,16 @@ namespace EmailWebApi.Services
         public EmailState GetEmailState(EmailInfo info)
         {
             _logger.LogInformation("Получена информация по сообщению");
-            return _databaseService.GetEmailByEmailInfo(info).State;
+            var result = _databaseService.GetEmailByEmailInfo(info);
+            if (result == null)
+            {
+                _logger.LogError("Сообщение не найдено");
+                return new EmailState();
+            }
+            else
+            {
+                return result.State;
+            }
         }
     }
 }

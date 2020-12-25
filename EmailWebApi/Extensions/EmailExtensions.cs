@@ -5,7 +5,7 @@ namespace EmailWebApi.Extensions
 {
     public static class EmailExtensions
     {
-        public static void SetState(this Email email, string status)
+        public static void SetState(this Email email, EmailStatus status)
         {
             if (email.State != null)
             {

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EmailWebApi.Objects;
 
 namespace EmailWebApi.Services
 {
     public interface IThrottlingService
     {
-        List<Email> Invoke(Email email);
+        Task Invoke(Email email);
     }
 }

@@ -1,9 +1,10 @@
-﻿using EmailWebApi.Objects;
+﻿using System.Threading.Tasks;
+using EmailWebApi.Objects;
 
 namespace EmailWebApi.Services
 {
     public interface IEmailTransferService
     {
-        Email Send(Email email);
+        Task Send(Email email);
     }
 }

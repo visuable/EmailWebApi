@@ -23,16 +23,22 @@ namespace EmailWebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSingleton<IDatabaseManagerService, DatabaseManagerService>();
+
             services.AddScoped<IStatusService, StatusService>();
             services.AddScoped<IThrottlingService, ThrottlingService>();
-            services.AddScoped<IDatabaseManagerService, DatabaseManagerService>();
             services.AddScoped<IEmailTransferService, EmailTransferService>();
+
             services.AddLogging();
             services.AddOptions();
+
             services.Configure<SmtpSettings>(Configuration.GetSection("SmtpSettings"));
             services.Configure<ThrottlingSettings>(Configuration.GetSection("ThrottlingSettings"));
+
             services.AddDbContext<EmailContext>(x =>
-                x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
+
+            services.AddHostedService<QueryExecutorService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

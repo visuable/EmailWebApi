@@ -1,8 +1,11 @@
-﻿namespace EmailWebApi.Objects
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EmailWebApi.Objects
 {
     public class EmailState
     {
-        public string Status { get; set; }
+        [NotNull]
+        public virtual EmailStatus Status { get; set; }
         public int Id { get; set; }
     }
 }

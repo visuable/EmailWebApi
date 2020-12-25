@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EmailWebApi.Objects;
 using EmailWebApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -24,17 +25,14 @@ namespace EmailWebApi.Controllers
 
         [HttpPost]
         [Route(nameof(Send))]
-        public IActionResult Send(JsonRequest<EmailDto> request)
+        public async Task<IActionResult> Send(JsonRequest<EmailDto> request)
         {
-            var result = _throttlingService.Invoke(new Email
+            await _throttlingService.Invoke(new Email
             {
                 Content = request.Input.Content
             });
             _logger.LogInformation("Сообщение отправлено");
-            return Ok(new JsonResponse<List<Email>>
-            {
-                Output = result
-            });
+            return Ok(new JsonResponse<object>());
         }
 
         [HttpPost]
@@ -43,7 +41,7 @@ namespace EmailWebApi.Controllers
         {
             var result = _statusService.GetEmailState(request.Input);
             _logger.LogInformation("Статус сообщения получен");
-            return Ok(new JsonResponse<EmailState>
+            return Ok(new JsonResponse<EmailState>()
             {
                 Output = result
             });

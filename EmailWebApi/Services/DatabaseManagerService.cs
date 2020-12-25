@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EmailWebApi.Database;
 using EmailWebApi.Objects;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace EmailWebApi.Services
@@ -10,12 +12,13 @@ namespace EmailWebApi.Services
     public class DatabaseManagerService : IDatabaseManagerService
     {
         private readonly ILogger<DatabaseManagerService> _logger;
-        private readonly EmailContext context;
+        private readonly EmailContext _context;
 
-        public DatabaseManagerService(EmailContext context, ILogger<DatabaseManagerService> logger)
+        public DatabaseManagerService(IServiceScopeFactory scope)
         {
-            this.context = context;
-            _logger = logger;
+            var scoped = scope.CreateScope();
+            _context = scoped.ServiceProvider.GetRequiredService<EmailContext>();
+            _logger = scoped.ServiceProvider.GetRequiredService<ILogger<DatabaseManagerService>>();
         }
 
         public void AddEmail(Email email)
@@ -24,15 +27,15 @@ namespace EmailWebApi.Services
             {
                 if (email.Content.Body.Save)
                 {
-                    context.Emails.Add(email);
+                    _context.Emails.Add(email);
                 }
                 else
                 {
                     email.Content.Body.Body = string.Empty;
-                    context.Emails.Add(email);
+                    _context.Emails.Add(email);
                 }
 
-                context.SaveChanges();
+                _context.SaveChanges();
             }
             catch
             {
@@ -42,12 +45,47 @@ namespace EmailWebApi.Services
             _logger.LogInformation("Сообщение внесено в базу данных");
         }
 
+        public Email GetEmailByEmailInfo(EmailInfo info)
+        {
+            return _context.Emails.ToList()
+                .FirstOrDefault(x => x.Info.UniversalId == info.UniversalId || x.Info.Date == info.Date);
+        }
+
+        public int GetCountByStatus(EmailStatus status)
+        {
+            return _context.Emails.Where(x => x.State.Status == status).ToList().Count;
+        }
+
+        public void UpdateEmail(Email email)
+        {
+            try
+            {
+                _context.Emails.Update(email);
+                _context.SaveChanges();
+                _logger.LogInformation("Сообщение обновилось");
+            }
+            catch
+            {
+                _logger.LogError("Сообщение не обновилось");
+            }
+        }
+
+        public Email GetEmailById(int id)
+        {
+            return _context.Emails.ToList().First(x => x.Id == id);
+        }
+
+        public ThrottlingState GetLastThrottlingState()
+        {
+            return _context.ThrottlingStates.ToList().OrderByDescending(x => x.Id).ToList().FirstOrDefault();
+        }
+
         public void AddThrottlingState(ThrottlingState state)
         {
             try
             {
-                context.ThrottlingStates.Add(state);
-                context.SaveChanges();
+                _context.ThrottlingStates.Add(state);
+                _context.SaveChanges();
             }
             catch
             {
@@ -57,50 +95,14 @@ namespace EmailWebApi.Services
             _logger.LogInformation("Состояние запросов зафиксировано");
         }
 
-        public int GetCountByStatus(string status)
+        public async Task<List<Email>> GetEmailsByStatus(EmailStatus status)
         {
-            return context.Emails.Where(x => x.State.Status == status).ToList().Count;
+            return (await _context.Emails.ToListAsync()).Where(x => x.State.Status == status).ToList();
         }
 
-        public Email GetEmailByEmailInfo(EmailInfo info)
+        public List<Email> GetAll()
         {
-            return context.Emails.ToList()
-                .FirstOrDefault(x => x.Info.UniversalId == info.UniversalId || x.Info.Date == info.Date);
-        }
-
-        public Email GetEmailById(int id)
-        {
-            return context.Emails.Find(id);
-        }
-
-        public List<Email> GetEmailsByStatus(string status)
-        {
-            return context.Emails.Include(x => x.State).Where(x => x.State.Status == status).ToList();
-
-        }
-
-        public string GetEmailStateById(int id)
-        {
-            return context.States.Find(id).Status;
-        }
-
-        public ThrottlingState GetLastThrottlingState()
-        {
-            return context.ThrottlingStates.OrderByDescending(x => x.Id).ToList().FirstOrDefault();
-        }
-
-        public void UpdateEmail(Email email)
-        {
-            try
-            {
-                context.Emails.Update(email);
-                context.SaveChanges();
-                _logger.LogInformation("Сообщение обновилось");
-            }
-            catch
-            {
-                _logger.LogError("Сообщение не обновилось");
-            }
+            return _context.Emails.ToList();
         }
     }
 }

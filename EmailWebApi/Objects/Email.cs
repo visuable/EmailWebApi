@@ -1,10 +1,15 @@
-﻿namespace EmailWebApi.Objects
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EmailWebApi.Objects
 {
     public class Email
     {
-        public EmailContent Content { get; set; }
-        public EmailInfo Info { get; set; }
-        public EmailState State { get; set; }
+        [NotNull]
+        public virtual EmailContent Content { get; set; }
+        [NotNull]
+        public virtual EmailInfo Info { get; set; }
+        [NotNull]
+        public virtual EmailState State { get; set; }
         public int Id { get; set; }
     }
 }

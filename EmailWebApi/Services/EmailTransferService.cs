@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using EmailWebApi.Extensions;
 using EmailWebApi.Objects;
 using EmailWebApi.Objects.Settings;
@@ -16,7 +17,7 @@ namespace EmailWebApi.Services
         private readonly IDatabaseManagerService _manager;
         private readonly IOptions<SmtpSettings> _options;
 
-        private readonly SmtpClient client;
+        private readonly SmtpClient _client;
 
         public EmailTransferService(IDatabaseManagerService manager, IOptions<SmtpSettings> options,
             ILogger<EmailTransferService> logger)
@@ -25,7 +26,7 @@ namespace EmailWebApi.Services
             _options = options;
             _logger = logger;
             var value = _options.Value;
-            client = new SmtpClient
+            _client = new SmtpClient
             {
                 Credentials = new NetworkCredential
                 {
@@ -38,54 +39,35 @@ namespace EmailWebApi.Services
             };
         }
 
-        public Email Send(Email email)
+        public async Task Send(Email email)
         {
-            if (email.State.Status == EmailStatus.Query)
-            {
-                email.SetEmailInfo();
-                _manager.AddEmail(email);
-                return email;
-            }
-
-            if (email.State.Status == EmailStatus.None)
-            {
-                if (email.Id == 0)
-                {
-                    email.SetEmailInfo();
-                    _manager.AddEmail(email);
-                    return SendEmail(email);
-                }
-                var dbEmail = _manager.GetEmailsByStatus(EmailStatus.Query).FirstOrDefault(x => x.Id == email.Id)?.State.Status;
-                if (dbEmail == EmailStatus.Query)
-                {
-                    return SendEmail(email);
-                }
-
-                _logger.LogError("Ошибка валидации сообщения");
-                throw new Exception();
-            }
-
-            return email;
+            await SmtpSendMessage(email);
         }
 
-        private Email SendEmail(Email email)
+        private async Task SmtpSendMessage(Email email)
         {
             try
             {
-                client.Send(_options.Value.SenderEmail, email.Content.Address, email.Content.Title,
+                await _client.SendMailAsync(_options.Value.SenderEmail, email.Content.Address, email.Content.Title,
                     email.Content.Body.Body);
-                email.UpdateEmailDate();
                 email.SetState(EmailStatus.Sent);
-                _logger.LogInformation("Сообщение отправлено");
             }
             catch
             {
-                email.UpdateEmailDate();
                 email.SetState(EmailStatus.Error);
             }
-
-            _manager.UpdateEmail(email);
-            return email;
+            finally
+            {
+                email.SetEmailInfo();
+                if (email.Id == 0)
+                {
+                    _manager.AddEmail(email);
+                }
+                else
+                {
+                    _manager.UpdateEmail(email);
+                }
+            }
         }
     }
 }
