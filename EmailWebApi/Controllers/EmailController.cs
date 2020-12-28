@@ -26,11 +26,14 @@ namespace EmailWebApi.Controllers
         [Route(nameof(Send))]
         public async Task<IActionResult> Send(JsonRequest<EmailDto> request)
         {
-            await _throttlingService.Invoke(new Email
+            var result = await _throttlingService.Invoke(new Email
             {
                 Content = request.Input.Content
             });
-            return Ok(new JsonResponse<EmailInfo>());
+            return Ok(new JsonResponse<EmailInfo>()
+            {
+                Output = result
+            });
         }
 
         [HttpPost]

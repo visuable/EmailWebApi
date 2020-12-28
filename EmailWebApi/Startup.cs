@@ -24,8 +24,8 @@ namespace EmailWebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSingleton<IDatabaseManagerService, DatabaseManagerService>();
 
+            services.AddScoped<IDatabaseManagerService, DatabaseManagerService>();
             services.AddScoped<IStatusService, StatusService>();
             services.AddScoped<IThrottlingService, ThrottlingService>();
             services.AddScoped<IEmailTransferService, EmailTransferService>();
