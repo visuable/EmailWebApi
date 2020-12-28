@@ -30,6 +30,8 @@ namespace EmailWebApi.Controllers
         /// </summary>
         /// <param name="request">Экземлпяр EmailDto.</param>
         /// <returns>EmailInfoDto</returns>
+        /// <response code=200>Вызов функции прошел без ошибок.</response>
+        /// <returns>Возвращает EmailInfo данного сообщеня.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(JsonResponse<EmailInfoDto>), StatusCodes.Status200OK)]
         [Route(nameof(Send))]
@@ -47,6 +49,7 @@ namespace EmailWebApi.Controllers
         /// </summary>
         /// <param name="request">Экземпляр EmailInfoDto</param>
         /// <returns>EmailStateDto</returns>
+        /// <response code=200>Вызов функции прошел без ошибок.</response>
         [HttpPost]
         [ProducesResponseType(typeof(JsonResponse<EmailStateDto>), StatusCodes.Status200OK)]
         [Route(nameof(GetEmailState))]
@@ -63,6 +66,7 @@ namespace EmailWebApi.Controllers
         /// Возвращает общую статистику приложения.
         /// </summary>
         /// <returns>ApplicationStateDto</returns>
+        /// <response code=200>Вызов функции прошел без ошибок.</response>
         [HttpPost]
         [ProducesResponseType(typeof(JsonResponse<ApplicationStateDto>), StatusCodes.Status200OK)]
         [Route(nameof(GetApplicationState))]

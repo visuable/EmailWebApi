@@ -2,6 +2,6 @@
 {
     public class EmailDto
     {
-        public EmailContent Content { get; set; }
+        public EmailContentDto Content { get; set; }
     }
 }

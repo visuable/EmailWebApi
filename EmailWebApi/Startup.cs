@@ -8,7 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.OpenApi.Models;
+using System.IO;
 using System.Text;
 
 namespace EmailWebApi
@@ -28,10 +30,15 @@ namespace EmailWebApi
             services.AddControllers();
             services.AddLogging();
             services.AddOptions();
-            services.AddSwaggerGen();
-            services.ConfigureSwaggerGen(x => x.SwaggerDoc("EmailWebApi", new OpenApiInfo()
+            services.AddSwaggerGen(options =>
             {
-                Title = "EmailWebApi",
+                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                var xmlPath = Path.Combine(basePath, "EmailWebApi.xml");
+                options.IncludeXmlComments(xmlPath, true);
+            });
+            services.ConfigureSwaggerGen(x => x.SwaggerDoc("emailWebApi", new OpenApiInfo()
+            {
+                Title = "Email Web Api",
                 Description = "Открытое Web Api для логгирования и отправки сообщений.",
                 Version = "1b"
             }));
@@ -62,7 +69,10 @@ namespace EmailWebApi
 
             app.UseSwagger();
 
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/emailWebApi/swagger.json", "EmailWebApi");
+            });
 
             app.UseRouting();
 
