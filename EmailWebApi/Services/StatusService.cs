@@ -1,4 +1,5 @@
 ﻿using EmailWebApi.Objects;
+using EmailWebApi.Objects.Dto;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
@@ -15,31 +16,40 @@ namespace EmailWebApi.Services
             _databaseService = databaseService;
         }
 
-        public async Task<ApplicationState> GetApplicationState()
+        public async Task<ApplicationStateDto> GetApplicationState()
         {
-            _logger.LogInformation("Возвращен статус приложения");
-            return new ApplicationState
+            var applicationState = new ApplicationStateDto();
+            try
             {
-                Total = await _databaseService.GetAllCount(),
-                Error = await _databaseService.GetCountByStatus(EmailStatus.Error),
-                Query = await _databaseService.GetCountByStatus(EmailStatus.Query),
-                Sent = await _databaseService.GetCountByStatus(EmailStatus.Sent)
-            };
+                applicationState = new ApplicationStateDto
+                {
+                    Total = await _databaseService.GetAllCount(),
+                    Error = await _databaseService.GetCountByStatus(EmailStatus.Error),
+                    Query = await _databaseService.GetCountByStatus(EmailStatus.Query),
+                    Sent = await _databaseService.GetCountByStatus(EmailStatus.Sent)
+                };
+                _logger.LogDebug("Возвращен статус приложения");
+            }
+            catch
+            {
+                _logger.LogError("Ошибка получения данных с сервера");
+            }
+            return applicationState;
         }
 
         public async Task<EmailState> GetEmailState(EmailInfo info)
         {
-            _logger.LogInformation("Получена информация по сообщению");
-            var result = await _databaseService.GetEmailByEmailInfo(info);
-            if (result == null)
+            var result = new EmailState();
+            try
             {
-                _logger.LogError("Сообщение не найдено");
-                return new EmailState();
+                result = (await _databaseService.GetEmailByEmailInfo(info)).State;
+                _logger.LogDebug("Получена информация по сообщению");
             }
-            else
+            catch
             {
-                return result.State;
+                _logger.LogError($"Невозможно получить EmailState по Guid {info.UniversalId}");
             }
+            return result;
         }
     }
 }

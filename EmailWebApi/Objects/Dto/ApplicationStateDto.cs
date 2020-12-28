@@ -1,6 +1,6 @@
-﻿namespace EmailWebApi.Objects
+﻿namespace EmailWebApi.Objects.Dto
 {
-    public class ApplicationState
+    public class ApplicationStateDto
     {
         public int Total { get; set; }
         public int Error { get; set; }

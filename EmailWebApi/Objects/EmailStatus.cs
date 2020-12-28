@@ -4,7 +4,6 @@
     {
         Error,
         Sent,
-        Query,
-        None
+        Query
     }
 }

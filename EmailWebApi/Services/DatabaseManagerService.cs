@@ -45,7 +45,7 @@ namespace EmailWebApi.Services
                     _logger.LogDebug($"Сообщение {email.Id} внесено в базу данных без Body");
                 }
 
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch
             {
@@ -134,7 +134,7 @@ namespace EmailWebApi.Services
             try
             {
                 await _context.ThrottlingStates.AddAsync(state);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
                 _logger.LogDebug($"Состояние {state.Id} внесено в базу данных");
             }
             catch

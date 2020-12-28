@@ -1,4 +1,4 @@
-﻿namespace EmailWebApi.Objects
+﻿namespace EmailWebApi.Objects.Dto
 {
     public class EmailDto
     {

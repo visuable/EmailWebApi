@@ -5,34 +5,17 @@ namespace EmailWebApi.Extensions
 {
     public static class ThrottlingStateExtensions
     {
-        public static void RefreshCounter(this ThrottlingState state)
-        {
-            state.Counter = 0;
-        }
-
-        public static void RefreshLastAddressCounter(this ThrottlingState state)
-        {
-            state.LastAddressCounter = 0;
-        }
-
-        public static void RefreshEndPoint(this ThrottlingState state)
-        {
-            state.EndPoint = DateTime.Now.AddSeconds(60);
-        }
-
-        public static void RefreshLastAddress(this ThrottlingState state, string lastAddress)
-        {
-            state.LastAddress = lastAddress;
-        }
-
-        public static void IncrementCounter(this ThrottlingState state)
+        public static void UpdateAfterSending(this ThrottlingState state, string lastAddress)
         {
             state.Counter++;
-        }
-
-        public static void IncrementLastAddressCounter(this ThrottlingState state)
-        {
             state.LastAddressCounter++;
+            state.LastAddress = lastAddress;
+        }
+        public static void Refresh(this ThrottlingState state)
+        {
+            state.Counter = 0;
+            state.LastAddressCounter = 0;
+            state.EndPoint = DateTime.Now.AddSeconds(60);
         }
     }
 }

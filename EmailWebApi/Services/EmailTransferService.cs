@@ -41,29 +41,23 @@ namespace EmailWebApi.Services
 
         public async Task<EmailInfo> Send(Email email)
         {
-            return await SmtpSendMessage(email);
-        }
-
-        private async Task<EmailInfo> SmtpSendMessage(Email email)
-        {
             try
             {
                 await _client.SendMailAsync(_options.Value.SenderEmail, email.Content.Address, email.Content.Title,
                     email.Content.Body.Body);
-                _logger.LogInformation("Сообщение отправлено");
+                _logger.LogDebug($"Сообщение {email.Id} отправлено");
                 email.SetState(EmailStatus.Sent);
-                _logger.LogInformation("Статус сообщения -- отправлено");
             }
             catch
             {
-                _logger.LogError("Сообщение не отправлено");
+                _logger.LogError($"Сообщение {email.Id} не отправлено");
                 email.SetState(EmailStatus.Error);
-                _logger.LogError("Статус сообщения -- ошибка");
             }
             finally
             {
                 email.SetEmailInfo();
-                _logger.LogInformation("EmailInfo установлено для данного сообщения");
+                _logger.LogDebug($"EmailInfo установлено для сообщения {email.Id}");
+                _logger.LogDebug($"Статус сообщения {email.State.Status}");
                 if (email.Id == 0)
                 {
                     await _manager.AddEmail(email);

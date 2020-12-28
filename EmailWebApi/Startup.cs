@@ -1,3 +1,4 @@
+using AutoMapper;
 using EmailWebApi.Database;
 using EmailWebApi.Objects.Settings;
 using EmailWebApi.Services;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 namespace EmailWebApi
@@ -24,20 +26,27 @@ namespace EmailWebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddLogging();
+            services.AddOptions();
+            services.AddSwaggerGen();
+            services.ConfigureSwaggerGen(x => x.SwaggerDoc("EmailWebApi", new OpenApiInfo()
+            {
+                Title = "EmailWebApi",
+                Description = "Открытое Web Api для логгирования и отправки сообщений.",
+                Version = "1b"
+            }));
 
             services.AddScoped<IDatabaseManagerService, DatabaseManagerService>();
             services.AddScoped<IStatusService, StatusService>();
             services.AddScoped<IThrottlingService, ThrottlingService>();
             services.AddScoped<IEmailTransferService, EmailTransferService>();
 
-            services.AddLogging();
-            services.AddOptions();
-
             services.Configure<SmtpSettings>(Configuration.GetSection("SmtpSettings"));
             services.Configure<ThrottlingSettings>(Configuration.GetSection("ThrottlingSettings"));
 
             services.AddDbContext<EmailContext>(x =>
                 x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
+            services.AddAutoMapper(typeof(Startup));
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -51,9 +60,17 @@ namespace EmailWebApi
 
             app.UseHttpsRedirection();
 
+            app.UseSwagger();
+
+            app.UseSwaggerUI();
+
             app.UseRouting();
 
-            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapSwagger();
+                endpoints.MapDefaultControllerRoute();
+            });
         }
     }
 }

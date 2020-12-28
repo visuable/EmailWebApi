@@ -23,19 +23,15 @@ namespace EmailWebApi.Extensions
             if (email.Info != null)
             {
                 email.Info.Date = DateTime.Now;
-                email.Info.UniversalId = Guid.NewGuid();
-                return;
             }
-            email.Info = new EmailInfo
+            else
             {
-                Date = DateTime.Now,
-                UniversalId = Guid.NewGuid()
-            };
-        }
-
-        public static void UpdateEmailDate(this Email email)
-        {
-            email.Info.Date = DateTime.Now;
+                email.Info = new EmailInfo
+                {
+                    Date = DateTime.Now,
+                    UniversalId = Guid.NewGuid()
+                };
+            }
         }
     }
 }

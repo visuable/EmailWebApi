@@ -32,41 +32,33 @@ namespace EmailWebApi.Services
             latestState = await _databaseService.GetLastThrottlingState();
             if (ConsumeTime() && ConsumeCounter())
             {
-                if (latestState.LastAddress != email.Content.Address)
-                {
-                    latestState.RefreshLastAddress(email.Content.Address);
-                    var result = await _emailService.Send(email);
-                    latestState.IncrementCounter();
-                    await SaveThrottlingState();
-                    return result;
-                }
-                else if(ConsumeAddressCounter())
-                {
-                    var result = await _emailService.Send(email);
-                    latestState.IncrementLastAddressCounter();
-                    await SaveThrottlingState();
-                    return result;
-                }
-                else
-                {
-                    email.SetState(EmailStatus.Query);
-                    await _databaseService.AddEmail(email);
-                }
+                var result = await _emailService.Send(email);
+                latestState.UpdateAfterSending(email.Content.Address);
+                SaveThrottlingState();
+                return result;
             }
             else if (ConsumeTime() && !ConsumeCounter())
             {
+                email.SetEmailInfo();
                 email.SetState(EmailStatus.Query);
                 await _databaseService.AddEmail(email);
+                return email.Info;
             }
             else if (!ConsumeTime())
             {
-                latestState.RefreshEndPoint();
-                latestState.RefreshCounter();
-                latestState.RefreshLastAddressCounter();
-                await SaveThrottlingState();
-                await Invoke(email);
+                latestState.Refresh();
+                SaveThrottlingState();
+                //Оправданно тем, что это легче, чем создать state-machine.
+                return await Invoke(email);
             }
-            return null;
+            else
+            {
+                return new EmailInfo()
+                {
+                    Date = DateTime.Now,
+                    UniversalId = Guid.Empty
+                };
+            }
         }
 
         private async Task SaveThrottlingState()
@@ -81,17 +73,32 @@ namespace EmailWebApi.Services
         }
         private bool ConsumeTime()
         {
-            return DateTimeOffset.Now.ToUnixTimeSeconds() <= new DateTimeOffset(latestState.EndPoint).ToUnixTimeSeconds();
+            var result = false;
+            try
+            {
+                result = DateTimeOffset.Now.ToUnixTimeSeconds() <= new DateTimeOffset(latestState.EndPoint).ToUnixTimeSeconds();
+                _logger.LogDebug($"Результат проверки по времени: {result}");
+            }
+            catch
+            {
+                _logger.LogError("Ошибка проверки времени");
+            }
+            return result;
         }
 
         private bool ConsumeCounter()
         {
-            return latestState.Counter < _options.Value.Limit;
+            var result = false;
+            try
+            {
+                result = latestState.Counter < _options.Value.Limit && latestState.LastAddressCounter < _options.Value.AddressLimit;
+            }
+            catch
+            {
+                _logger.LogError("Ошибка проверки счетчика запросов");
+            }
+            return result;
         }
 
-        private bool ConsumeAddressCounter()
-        {
-            return latestState.LastAddressCounter < _options.Value.AddressLimit;
-        }
     }
 }
