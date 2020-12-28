@@ -1,5 +1,6 @@
 ﻿using EmailWebApi.Objects;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace EmailWebApi.Services
 {
@@ -14,22 +15,22 @@ namespace EmailWebApi.Services
             _databaseService = databaseService;
         }
 
-        public ApplicationState GetApplicationState()
+        public async Task<ApplicationState> GetApplicationState()
         {
             _logger.LogInformation("Возвращен статус приложения");
             return new ApplicationState
             {
-                Total = _databaseService.GetAll().Count,
-                Error = _databaseService.GetCountByStatus(EmailStatus.Error),
-                Query = _databaseService.GetCountByStatus(EmailStatus.Query),
-                Sent = _databaseService.GetCountByStatus(EmailStatus.Sent)
+                Total = await _databaseService.GetAllCount(),
+                Error = await _databaseService.GetCountByStatus(EmailStatus.Error),
+                Query = await _databaseService.GetCountByStatus(EmailStatus.Query),
+                Sent = await _databaseService.GetCountByStatus(EmailStatus.Sent)
             };
         }
 
-        public EmailState GetEmailState(EmailInfo info)
+        public async Task<EmailState> GetEmailState(EmailInfo info)
         {
             _logger.LogInformation("Получена информация по сообщению");
-            var result = _databaseService.GetEmailByEmailInfo(info);
+            var result = await _databaseService.GetEmailByEmailInfo(info);
             if (result == null)
             {
                 _logger.LogError("Сообщение не найдено");

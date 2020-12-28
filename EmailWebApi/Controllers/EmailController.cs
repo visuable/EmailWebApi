@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using EmailWebApi.Objects;
 using EmailWebApi.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,19 +12,17 @@ namespace EmailWebApi.Controllers
     [ApiController]
     public class EmailController : ControllerBase
     {
-        private readonly ILogger<EmailController> _logger;
         private readonly IStatusService _statusService;
         private readonly IThrottlingService _throttlingService;
 
-        public EmailController(IThrottlingService throttlingService, IStatusService statusService,
-            ILogger<EmailController> logger)
+        public EmailController(IThrottlingService throttlingService, IStatusService statusService)
         {
             _throttlingService = throttlingService;
             _statusService = statusService;
-            _logger = logger;
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(JsonResponse<object>), StatusCodes.Status200OK)]
         [Route(nameof(Send))]
         public async Task<IActionResult> Send(JsonRequest<EmailDto> request)
         {
@@ -31,16 +30,15 @@ namespace EmailWebApi.Controllers
             {
                 Content = request.Input.Content
             });
-            _logger.LogInformation("Сообщение отправлено");
             return Ok(new JsonResponse<object>());
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(JsonResponse<EmailInfo>), StatusCodes.Status200OK)]
         [Route(nameof(GetEmailState))]
-        public IActionResult GetEmailState(JsonRequest<EmailInfo> request)
+        public async Task<IActionResult> GetEmailState(JsonRequest<EmailInfo> request)
         {
-            var result = _statusService.GetEmailState(request.Input);
-            _logger.LogInformation("Статус сообщения получен");
+            var result = await _statusService.GetEmailState(request.Input);
             return Ok(new JsonResponse<EmailState>()
             {
                 Output = result
@@ -48,11 +46,11 @@ namespace EmailWebApi.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(JsonResponse<ApplicationState>), StatusCodes.Status200OK)]
         [Route(nameof(GetApplicationState))]
-        public IActionResult GetApplicationState()
+        public async Task<IActionResult> GetApplicationState()
         {
-            var result = _statusService.GetApplicationState();
-            _logger.LogInformation("Возвращено состояние приложение");
+            var result = await _statusService.GetApplicationState();
             return Ok(new JsonResponse<ApplicationState>
             {
                 Output = result

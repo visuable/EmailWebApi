@@ -6,14 +6,14 @@ namespace EmailWebApi.Services
 {
     public interface IDatabaseManagerService
     {
-        void AddEmail(Email email);
-        Email GetEmailByEmailInfo(EmailInfo info);
-        int GetCountByStatus(EmailStatus status);
-        void UpdateEmail(Email email);
-        Email GetEmailById(int id);
-        ThrottlingState GetLastThrottlingState();
-        void AddThrottlingState(ThrottlingState state);
+        Task AddEmail(Email email);
+        Task UpdateEmail(Email email);
+        Task AddThrottlingState(ThrottlingState state);
+        Task<Email> GetEmailByEmailInfo(EmailInfo info);
+        Task<Email> GetEmailById(int id);
+        Task<int> GetCountByStatus(EmailStatus status);
+        Task<int> GetAllCount();
+        Task<ThrottlingState> GetLastThrottlingState();
         Task<List<Email>> GetEmailsByStatus(EmailStatus status);
-        List<Email> GetAll();
     }
 }

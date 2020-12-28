@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace EmailWebApi.Services
 {
-    public class QueryExecutorService : IHostedService
+    public class QueryExecutorService : BackgroundService
     {
         private IDatabaseManagerService _manager;
         private IEmailTransferService _email;
@@ -19,18 +19,18 @@ namespace EmailWebApi.Services
             _manager = scoped.ServiceProvider.GetRequiredService<IDatabaseManagerService>();
             _email = scoped.ServiceProvider.GetRequiredService<IEmailTransferService>();
         }
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            var queryMessages = await _manager.GetEmailsByStatus(EmailStatus.Query);
-            foreach (var message in queryMessages)
-            {
-                await _email.Send(message);
-            }
-        }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            return Task.CompletedTask;
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                var queryMessages = await _manager.GetEmailsByStatus(EmailStatus.Query);
+                foreach (var message in queryMessages)
+                {
+                    await _email.Send(message);
+                    await Task.Delay(1000);
+                }
+            }
         }
     }
 }

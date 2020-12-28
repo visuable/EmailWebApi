@@ -29,7 +29,7 @@ namespace EmailWebApi.Services
 
         public async Task Invoke(Email email)
         {
-            latestState = _databaseService.GetLastThrottlingState();
+            latestState = await _databaseService.GetLastThrottlingState();
             if (ConsumeTime() && ConsumeCounter())
             {
                 if (latestState.LastAddress != email.Content.Address)
@@ -37,38 +37,38 @@ namespace EmailWebApi.Services
                     latestState.RefreshLastAddress(email.Content.Address);
                     await _emailService.Send(email);
                     latestState.IncrementCounter();
-                    SaveThrottlingState();
+                    await SaveThrottlingState();
                 }
                 else if(ConsumeAddressCounter())
                 {
                     await _emailService.Send(email);
                     latestState.IncrementLastAddressCounter();
-                    SaveThrottlingState();
+                    await SaveThrottlingState();
                 }
                 else
                 {
                     email.SetState(EmailStatus.Query);
-                    _databaseService.AddEmail(email);
+                    await _databaseService.AddEmail(email);
                 }
             }
             else if (ConsumeTime() && !ConsumeCounter())
             {
                 email.SetState(EmailStatus.Query);
-                _databaseService.AddEmail(email);
+                await _databaseService.AddEmail(email);
             }
             else if (!ConsumeTime())
             {
                 latestState.RefreshEndPoint();
                 latestState.RefreshCounter();
                 latestState.RefreshLastAddressCounter();
-                SaveThrottlingState();
+                await SaveThrottlingState();
                 await Invoke(email);
             }
         }
 
-        private void SaveThrottlingState()
+        private async Task SaveThrottlingState()
         {
-            _databaseService.AddThrottlingState(new ThrottlingState()
+            await _databaseService.AddThrottlingState(new ThrottlingState()
             {
                 Counter = latestState.Counter,
                 EndPoint = latestState.EndPoint,

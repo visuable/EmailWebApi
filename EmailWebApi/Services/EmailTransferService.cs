@@ -50,22 +50,27 @@ namespace EmailWebApi.Services
             {
                 await _client.SendMailAsync(_options.Value.SenderEmail, email.Content.Address, email.Content.Title,
                     email.Content.Body.Body);
+                _logger.LogInformation("Сообщение отправлено");
                 email.SetState(EmailStatus.Sent);
+                _logger.LogInformation("Статус сообщения -- отправлено");
             }
             catch
             {
+                _logger.LogError("Сообщение не отправлено");
                 email.SetState(EmailStatus.Error);
+                _logger.LogError("Статус сообщения -- ошибка");
             }
             finally
             {
                 email.SetEmailInfo();
+                _logger.LogInformation("EmailInfo установлено для данного сообщения");
                 if (email.Id == 0)
                 {
-                    _manager.AddEmail(email);
+                    await _manager.AddEmail(email);
                 }
                 else
                 {
-                    _manager.UpdateEmail(email);
+                    await _manager.UpdateEmail(email);
                 }
             }
         }

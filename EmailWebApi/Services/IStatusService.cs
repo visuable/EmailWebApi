@@ -1,10 +1,11 @@
 ﻿using EmailWebApi.Objects;
+using System.Threading.Tasks;
 
 namespace EmailWebApi.Services
 {
     public interface IStatusService
     {
-        EmailState GetEmailState(EmailInfo info);
-        ApplicationState GetApplicationState();
+        Task<EmailState> GetEmailState(EmailInfo info);
+        Task<ApplicationState> GetApplicationState();
     }
 }

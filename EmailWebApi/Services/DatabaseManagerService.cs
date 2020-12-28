@@ -21,88 +21,155 @@ namespace EmailWebApi.Services
             _logger = scoped.ServiceProvider.GetRequiredService<ILogger<DatabaseManagerService>>();
         }
 
-        public void AddEmail(Email email)
+        public async Task AddEmail(Email email)
         {
+            var copy = new Email()
+            {
+                Content = email.Content,
+                Id = email.Id,
+                Info = email.Info,
+                State = email.State
+            };
             try
             {
-                if (email.Content.Body.Save)
+                if (copy.Content.Body.Save)
                 {
-                    _context.Emails.Add(email);
+                    await _context.Emails.AddAsync(email);
+                    _logger.LogDebug($"Сообщение {email.Id} внесено в базу данных с Body");
                 }
                 else
                 {
-                    email.Content.Body.Body = string.Empty;
-                    _context.Emails.Add(email);
+                    copy.Content.Body.Body = string.Empty;
+                    await _context.Emails.AddAsync(email);
+                    _logger.LogDebug($"Сообщение {email.Id} внесено в базу данных без Body");
                 }
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch
             {
-                _logger.LogError("Сообщение не может быть внесено в базу данных");
+                _logger.LogError($"Сообщение не может быть внесено в базу данных");
             }
 
-            _logger.LogInformation("Сообщение внесено в базу данных");
+            
         }
 
-        public Email GetEmailByEmailInfo(EmailInfo info)
+        public async Task<Email> GetEmailByEmailInfo(EmailInfo info)
         {
-            return _context.Emails.ToList()
-                .FirstOrDefault(x => x.Info.UniversalId == info.UniversalId || x.Info.Date == info.Date);
+            Email email = null;
+            try
+            {
+                email = await _context.Emails.FirstOrDefaultAsync(x => x.Info.Date == info.Date || x.Info.UniversalId == info.UniversalId);
+                _logger.LogDebug($"Сообщение {email.Id} возвращено из базы данных по идентификатору EmailInfo {info.Id}");
+            }
+            catch
+            {
+                _logger.LogError($"Сообщения с указанным Guid {info.UniversalId}  нет в базе данных");
+            }
+            return email;
         }
 
-        public int GetCountByStatus(EmailStatus status)
+        public async Task<int> GetCountByStatus(EmailStatus status)
         {
-            return _context.Emails.Where(x => x.State.Status == status).ToList().Count;
+            int count = 0;
+            try
+            {
+                count = await _context.Emails.CountAsync(x => x.State.Status == status);
+                _logger.LogDebug($"Возвращено {count} записей в базе данных");
+            }
+            catch
+            {
+                _logger.LogError("Ошибка при выполнении COUNT");
+            }
+            return count;
         }
 
-        public void UpdateEmail(Email email)
+        public async Task UpdateEmail(Email email)
         {
             try
             {
                 _context.Emails.Update(email);
-                _context.SaveChanges();
-                _logger.LogInformation("Сообщение обновилось");
+                await _context.SaveChangesAsync();
+                _logger.LogDebug($"Сообщение {email.Id} обновилось в базе данных");
             }
             catch
             {
-                _logger.LogError("Сообщение не обновилось");
+                _logger.LogError("Сообщение не обновилось в базе данных");
             }
         }
 
-        public Email GetEmailById(int id)
+        public async Task<Email> GetEmailById(int id)
         {
-            return _context.Emails.ToList().First(x => x.Id == id);
+            Email email = null;
+            try
+            {
+                email =  await _context.Emails.FindAsync(id);
+                _logger.LogDebug($"Сообщение извлечено из базы данных по идентификатору {id}");
+            }
+            catch
+            {
+                _logger.LogError($"Сообщение под идентификатором {id} не найдено в базе данных");
+            }
+            return email;
         }
 
-        public ThrottlingState GetLastThrottlingState()
+        public async Task<ThrottlingState> GetLastThrottlingState()
         {
-            return _context.ThrottlingStates.ToList().OrderByDescending(x => x.Id).ToList().FirstOrDefault();
+            ThrottlingState state = null;
+            try
+            {
+                state = await _context.ThrottlingStates.OrderByDescending(x => x.EndPoint).FirstOrDefaultAsync();
+                _logger.LogDebug($"Извлечено последнее состояние с идентификатором {state.Id}");
+            }
+            catch
+            {
+                _logger.LogError("Ошибка при получении последнего состояния");
+            }
+            return state;
         }
 
-        public void AddThrottlingState(ThrottlingState state)
+        public async Task AddThrottlingState(ThrottlingState state)
         {
             try
             {
-                _context.ThrottlingStates.Add(state);
-                _context.SaveChanges();
+                await _context.ThrottlingStates.AddAsync(state);
+                await _context.SaveChangesAsync();
+                _logger.LogDebug($"Состояние {state.Id} внесено в базу данных");
             }
             catch
             {
-                _logger.LogError("Состояние запросов не может быть зафиксировано");
+                _logger.LogError($"Указанное состояние запросов не может быть внесено в базу данных");
             }
-
-            _logger.LogInformation("Состояние запросов зафиксировано");
         }
 
         public async Task<List<Email>> GetEmailsByStatus(EmailStatus status)
         {
-            return (await _context.Emails.ToListAsync()).Where(x => x.State.Status == status).ToList();
+            List<Email> emails = new List<Email>();
+            try
+            {
+                emails = await _context.Emails.Where(x => x.State.Status == status).ToListAsync();
+                _logger.LogDebug($"Получение списка сообщений со статусом {status}");
+            }
+            catch
+            {
+                _logger.LogError($"Ошибка при получении списка сообщений со статусом {status}");
+            }
+            return emails;
         }
 
-        public List<Email> GetAll()
+        public async Task<int> GetAllCount()
         {
-            return _context.Emails.ToList();
+            int count = 0;
+            try
+            {
+                count = await _context.Emails.CountAsync();
+                _logger.LogDebug($"Получено количество всех записей {count}");
+            }
+            catch
+            {
+                _logger.LogError("Невозможно выполнить COUNT");
+            }
+            return count;
         }
     }
 }
