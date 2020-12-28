@@ -11,25 +11,27 @@ namespace EmailWebApi.Services
 {
     public class QueryExecutorService : BackgroundService
     {
-        private IDatabaseManagerService _manager;
-        private IEmailTransferService _email;
-        public QueryExecutorService(IServiceScopeFactory scope)
+        private IServiceScopeFactory _scopeFactory;
+        public QueryExecutorService(IServiceScopeFactory scopeFactory)
         {
-            using var scoped = scope.CreateScope();
-            _manager = scoped.ServiceProvider.GetRequiredService<IDatabaseManagerService>();
-            _email = scoped.ServiceProvider.GetRequiredService<IEmailTransferService>();
+            _scopeFactory = scopeFactory;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var queryMessages = await _manager.GetEmailsByStatus(EmailStatus.Query);
-                foreach (var message in queryMessages)
+                using (var scope = _scopeFactory.CreateScope())
                 {
-                    await _email.Send(message);
-                    await Task.Delay(1000);
-                }
+                    var _email = scope.ServiceProvider.GetRequiredService<IEmailTransferService>();
+                    var _manager = scope.ServiceProvider.GetRequiredService<IDatabaseManagerService>();
+                    var queryMessages = await _manager.GetEmailsByStatus(EmailStatus.Query);
+                    foreach (var message in queryMessages)
+                    {
+                        await _email.Send(message);
+                        await Task.Delay(1000);
+                    }
+                } 
             }
         }
     }

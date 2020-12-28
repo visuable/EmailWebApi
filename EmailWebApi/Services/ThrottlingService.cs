@@ -27,7 +27,7 @@ namespace EmailWebApi.Services
             _databaseService = databaseService;
         }
 
-        public async Task Invoke(Email email)
+        public async Task<EmailInfo> Invoke(Email email)
         {
             latestState = await _databaseService.GetLastThrottlingState();
             if (ConsumeTime() && ConsumeCounter())
@@ -35,15 +35,17 @@ namespace EmailWebApi.Services
                 if (latestState.LastAddress != email.Content.Address)
                 {
                     latestState.RefreshLastAddress(email.Content.Address);
-                    await _emailService.Send(email);
+                    var result = await _emailService.Send(email);
                     latestState.IncrementCounter();
                     await SaveThrottlingState();
+                    return result;
                 }
                 else if(ConsumeAddressCounter())
                 {
-                    await _emailService.Send(email);
+                    var result = await _emailService.Send(email);
                     latestState.IncrementLastAddressCounter();
                     await SaveThrottlingState();
+                    return result;
                 }
                 else
                 {
@@ -64,6 +66,7 @@ namespace EmailWebApi.Services
                 await SaveThrottlingState();
                 await Invoke(email);
             }
+            return null;
         }
 
         private async Task SaveThrottlingState()

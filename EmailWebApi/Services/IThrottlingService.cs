@@ -6,6 +6,6 @@ namespace EmailWebApi.Services
 {
     public interface IThrottlingService
     {
-        Task Invoke(Email email);
+        Task<EmailInfo> Invoke(Email email);
     }
 }

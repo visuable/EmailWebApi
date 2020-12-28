@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text;
 
 namespace EmailWebApi
 {
@@ -37,6 +38,8 @@ namespace EmailWebApi
 
             services.AddDbContext<EmailContext>(x =>
                 x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
+
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             services.AddHostedService<QueryExecutorService>();
         }

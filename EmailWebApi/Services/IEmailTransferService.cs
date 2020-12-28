@@ -5,6 +5,6 @@ namespace EmailWebApi.Services
 {
     public interface IEmailTransferService
     {
-        Task Send(Email email);
+        Task<EmailInfo> Send(Email email);
     }
 }

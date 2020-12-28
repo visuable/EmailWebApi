@@ -14,11 +14,16 @@ namespace EmailWebApi.Services
         private readonly ILogger<DatabaseManagerService> _logger;
         private readonly EmailContext _context;
 
-        public DatabaseManagerService(IServiceScopeFactory scope)
+        private IServiceScopeFactory _scopeFactory;
+
+        public DatabaseManagerService(IServiceScopeFactory scopeFactory)
         {
-            var scoped = scope.CreateScope();
-            _context = scoped.ServiceProvider.GetRequiredService<EmailContext>();
-            _logger = scoped.ServiceProvider.GetRequiredService<ILogger<DatabaseManagerService>>();
+            _scopeFactory = scopeFactory;
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                _context = scope.ServiceProvider.GetRequiredService<EmailContext>();
+                _logger = scope.ServiceProvider.GetRequiredService<ILogger<DatabaseManagerService>>();
+            }
         }
 
         public async Task AddEmail(Email email)

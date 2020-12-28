@@ -39,12 +39,12 @@ namespace EmailWebApi.Services
             };
         }
 
-        public async Task Send(Email email)
+        public async Task<EmailInfo> Send(Email email)
         {
-            await SmtpSendMessage(email);
+            return await SmtpSendMessage(email);
         }
 
-        private async Task SmtpSendMessage(Email email)
+        private async Task<EmailInfo> SmtpSendMessage(Email email)
         {
             try
             {
@@ -73,6 +73,7 @@ namespace EmailWebApi.Services
                     await _manager.UpdateEmail(email);
                 }
             }
+            return email.Info;
         }
     }
 }

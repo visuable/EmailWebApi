@@ -22,7 +22,7 @@ namespace EmailWebApi.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(JsonResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(JsonResponse<EmailInfo>), StatusCodes.Status200OK)]
         [Route(nameof(Send))]
         public async Task<IActionResult> Send(JsonRequest<EmailDto> request)
         {
@@ -30,7 +30,7 @@ namespace EmailWebApi.Controllers
             {
                 Content = request.Input.Content
             });
-            return Ok(new JsonResponse<object>());
+            return Ok(new JsonResponse<EmailInfo>());
         }
 
         [HttpPost]
