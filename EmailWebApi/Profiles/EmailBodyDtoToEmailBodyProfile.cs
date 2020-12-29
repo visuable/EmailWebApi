@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using EmailWebApi.Objects;
-using EmailWebApi.Objects.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using EmailWebApi.Entities;
+using EmailWebApi.Entities.Dto;
 
 namespace EmailWebApi.Profiles
 {
@@ -12,7 +8,7 @@ namespace EmailWebApi.Profiles
     {
         public EmailBodyDtoToEmailBodyProfile()
         {
-            CreateMap<EmailBody, EmailBodyDto>()
+            CreateMap<EmailBodyDto, EmailBody>()
                 .ForMember(x => x.Body, y => y.MapFrom(z => z.Body))
                 .ForMember(x => x.Save, y => y.MapFrom(z => z.Save));
         }

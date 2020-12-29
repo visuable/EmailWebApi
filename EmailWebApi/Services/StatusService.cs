@@ -1,7 +1,7 @@
-﻿using EmailWebApi.Objects;
-using EmailWebApi.Objects.Dto;
+﻿using System.Threading.Tasks;
+using EmailWebApi.Entities;
+using EmailWebApi.Entities.Dto;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace EmailWebApi.Services
 {
@@ -23,10 +23,10 @@ namespace EmailWebApi.Services
             {
                 applicationState = new ApplicationStateDto
                 {
-                    Total = await _databaseService.GetAllCount(),
-                    Error = await _databaseService.GetCountByStatus(EmailStatus.Error),
-                    Query = await _databaseService.GetCountByStatus(EmailStatus.Query),
-                    Sent = await _databaseService.GetCountByStatus(EmailStatus.Sent)
+                    Total = await _databaseService.GetAllCountAsync(),
+                    Error = await _databaseService.GetCountByStatusAsync(EmailStatus.Error),
+                    Query = await _databaseService.GetCountByStatusAsync(EmailStatus.Query),
+                    Sent = await _databaseService.GetCountByStatusAsync(EmailStatus.Sent)
                 };
                 _logger.LogDebug("Возвращен статус приложения");
             }
@@ -34,6 +34,7 @@ namespace EmailWebApi.Services
             {
                 _logger.LogError("Ошибка получения данных с сервера");
             }
+
             return applicationState;
         }
 
@@ -42,13 +43,14 @@ namespace EmailWebApi.Services
             var result = new EmailState();
             try
             {
-                result = (await _databaseService.GetEmailByEmailInfo(info)).State;
+                result = (await _databaseService.GetEmailByEmailInfoAsync(info)).State;
                 _logger.LogDebug("Получена информация по сообщению");
             }
             catch
             {
                 _logger.LogError($"Невозможно получить EmailState по Guid {info.UniversalId}");
             }
+
             return result;
         }
     }

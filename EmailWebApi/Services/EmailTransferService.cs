@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using EmailWebApi.Entities;
+using EmailWebApi.Entities.Settings;
 using EmailWebApi.Extensions;
-using EmailWebApi.Objects;
-using EmailWebApi.Objects.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,11 +11,10 @@ namespace EmailWebApi.Services
 {
     public class EmailTransferService : IEmailTransferService
     {
+        private readonly SmtpClient _client;
         private readonly ILogger<EmailTransferService> _logger;
         private readonly IDatabaseManagerService _manager;
         private readonly IOptions<SmtpSettings> _options;
-
-        private readonly SmtpClient _client;
 
         public EmailTransferService(IDatabaseManagerService manager, IOptions<SmtpSettings> options,
             ILogger<EmailTransferService> logger)
@@ -59,14 +56,11 @@ namespace EmailWebApi.Services
                 _logger.LogDebug($"EmailInfo установлено для сообщения {email.Id}");
                 _logger.LogDebug($"Статус сообщения {email.State.Status}");
                 if (email.Id == 0)
-                {
-                    await _manager.AddEmail(email);
-                }
+                    await _manager.AddEmailAsync(email);
                 else
-                {
-                    await _manager.UpdateEmail(email);
-                }
+                    await _manager.UpdateEmailAsync(email);
             }
+
             return email.Info;
         }
     }

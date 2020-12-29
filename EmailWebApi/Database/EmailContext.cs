@@ -1,5 +1,5 @@
 ﻿using System;
-using EmailWebApi.Objects;
+using EmailWebApi.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmailWebApi.Database

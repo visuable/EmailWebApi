@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using EmailWebApi.Objects;
-using EmailWebApi.Objects.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using EmailWebApi.Entities;
+using EmailWebApi.Entities.Dto;
 
 namespace EmailWebApi.Profiles
 {

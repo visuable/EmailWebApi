@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
-using EmailWebApi.Objects;
-using EmailWebApi.Objects.Dto;
+using EmailWebApi.Entities;
+using EmailWebApi.Entities.Dto;
 using EmailWebApi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace EmailWebApi.Controllers
 {
@@ -15,9 +13,9 @@ namespace EmailWebApi.Controllers
     [ApiController]
     public class EmailController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IStatusService _statusService;
         private readonly IThrottlingService _throttlingService;
-        private readonly IMapper _mapper;
 
         public EmailController(IThrottlingService throttlingService, IStatusService statusService, IMapper mapper)
         {
@@ -25,50 +23,51 @@ namespace EmailWebApi.Controllers
             _statusService = statusService;
             _mapper = mapper;
         }
+
         /// <summary>
-        /// Отсылает сообщение.
+        ///     Отсылает сообщение.
         /// </summary>
-        /// <param name="request">Экземлпяр EmailDto.</param>
         /// <returns>EmailInfoDto</returns>
-        /// <response code=200>Вызов функции прошел без ошибок.</response>
         /// <returns>Возвращает EmailInfo данного сообщеня.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(JsonResponse<EmailInfoDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(JsonResponse<EmailInfoDto>), StatusCodes.Status500InternalServerError)]
         [Route(nameof(Send))]
-        public async Task<IActionResult> Send(JsonRequest<EmailDto> request)
+        public async Task<IActionResult> Send([FromBody] JsonRequest<EmailDto> request)
         {
             var email = _mapper.Map<Email>(request.Input);
             var result = await _throttlingService.Invoke(email);
-            return Ok(new JsonResponse<EmailInfoDto>()
+            return Ok(new JsonResponse<EmailInfoDto>
             {
                 Output = _mapper.Map<EmailInfoDto>(result)
             });
         }
+
         /// <summary>
-        /// Возвращает статус сообщения по дате и/или Guid.
+        ///     Возвращает статус сообщения по дате и/или Guid.
         /// </summary>
-        /// <param name="request">Экземпляр EmailInfoDto</param>
         /// <returns>EmailStateDto</returns>
-        /// <response code=200>Вызов функции прошел без ошибок.</response>
         [HttpPost]
         [ProducesResponseType(typeof(JsonResponse<EmailStateDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(JsonResponse<EmailInfoDto>), StatusCodes.Status500InternalServerError)]
         [Route(nameof(GetEmailState))]
-        public async Task<IActionResult> GetEmailState(JsonRequest<EmailInfoDto> request)
+        public async Task<IActionResult> GetEmailState([FromBody] JsonRequest<EmailInfoDto> request)
         {
             var emailInfo = _mapper.Map<EmailInfo>(request.Input);
             var result = await _statusService.GetEmailState(emailInfo);
-            return Ok(new JsonResponse<EmailStateDto>()
+            return Ok(new JsonResponse<EmailStateDto>
             {
                 Output = _mapper.Map<EmailStateDto>(result)
             });
         }
+
         /// <summary>
-        /// Возвращает общую статистику приложения.
+        ///     Возвращает общую статистику приложения.
         /// </summary>
         /// <returns>ApplicationStateDto</returns>
-        /// <response code=200>Вызов функции прошел без ошибок.</response>
         [HttpPost]
         [ProducesResponseType(typeof(JsonResponse<ApplicationStateDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(JsonResponse<object>), StatusCodes.Status500InternalServerError)]
         [Route(nameof(GetApplicationState))]
         public async Task<IActionResult> GetApplicationState()
         {

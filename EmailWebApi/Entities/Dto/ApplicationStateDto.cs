@@ -1,4 +1,4 @@
-﻿namespace EmailWebApi.Objects.Dto
+﻿namespace EmailWebApi.Entities.Dto
 {
     public class ApplicationStateDto
     {

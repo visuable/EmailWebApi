@@ -1,5 +1,5 @@
 ﻿using System;
-using EmailWebApi.Objects;
+using EmailWebApi.Entities;
 
 namespace EmailWebApi.Extensions
 {
@@ -11,6 +11,7 @@ namespace EmailWebApi.Extensions
             state.LastAddressCounter++;
             state.LastAddress = lastAddress;
         }
+
         public static void Refresh(this ThrottlingState state)
         {
             state.Counter = 0;

@@ -1,6 +1,6 @@
-﻿using EmailWebApi.Objects;
-using EmailWebApi.Objects.Dto;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using EmailWebApi.Entities;
+using EmailWebApi.Entities.Dto;
 
 namespace EmailWebApi.Services
 {

@@ -1,4 +1,4 @@
-﻿namespace EmailWebApi.Objects.Settings
+﻿namespace EmailWebApi.Entities.Settings
 {
     public class ThrottlingSettings
     {

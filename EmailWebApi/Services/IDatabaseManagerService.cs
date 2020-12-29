@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using EmailWebApi.Objects;
+using EmailWebApi.Entities;
 
 namespace EmailWebApi.Services
 {
     public interface IDatabaseManagerService
     {
-        Task AddEmail(Email email);
-        Task UpdateEmail(Email email);
-        Task AddThrottlingState(ThrottlingState state);
-        Task<Email> GetEmailByEmailInfo(EmailInfo info);
-        Task<Email> GetEmailById(int id);
-        Task<int> GetCountByStatus(EmailStatus status);
-        Task<int> GetAllCount();
-        Task<ThrottlingState> GetLastThrottlingState();
-        Task<List<Email>> GetEmailsByStatus(EmailStatus status);
+        Task AddEmailAsync(Email email);
+        Task UpdateEmailAsync(Email email);
+        Task AddThrottlingStateAsync(ThrottlingState state);
+        Task<Email> GetEmailByEmailInfoAsync(EmailInfo info);
+        Task<int> GetCountByStatusAsync(EmailStatus status);
+        Task<int> GetAllCountAsync();
+        Task<ThrottlingState> GetLastThrottlingStateAsync();
+        Task<List<Email>> GetEmailsByStatusAsync(EmailStatus status);
     }
 }

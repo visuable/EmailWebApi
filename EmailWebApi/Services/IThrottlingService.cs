@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using EmailWebApi.Objects;
+﻿using System.Threading.Tasks;
+using EmailWebApi.Entities;
 
 namespace EmailWebApi.Services
 {

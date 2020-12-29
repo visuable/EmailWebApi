@@ -2,29 +2,26 @@
 using System.Linq;
 using System.Threading.Tasks;
 using EmailWebApi.Database;
-using EmailWebApi.Objects;
+using EmailWebApi.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace EmailWebApi.Services
 {
     public class DatabaseManagerService : IDatabaseManagerService
     {
-        private readonly ILogger<DatabaseManagerService> _logger;
         private readonly EmailContext _context;
+        private readonly ILogger<DatabaseManagerService> _logger;
 
-        private IServiceScopeFactory _scopeFactory;
-
-        public DatabaseManagerService(ILogger<DatabaseManagerService> logger, EmailContext context) 
+        public DatabaseManagerService(ILogger<DatabaseManagerService> logger, EmailContext context)
         {
             _logger = logger;
             _context = context;
         }
 
-        public async Task AddEmail(Email email)
+        public async Task AddEmailAsync(Email email)
         {
-            var copy = new Email()
+            var copy = new Email
             {
                 Content = email.Content,
                 Id = email.Id,
@@ -49,30 +46,31 @@ namespace EmailWebApi.Services
             }
             catch
             {
-                _logger.LogError($"Сообщение не может быть внесено в базу данных");
+                _logger.LogError("Сообщение не может быть внесено в базу данных");
             }
-
-            
         }
 
-        public async Task<Email> GetEmailByEmailInfo(EmailInfo info)
+        public async Task<Email> GetEmailByEmailInfoAsync(EmailInfo info)
         {
             Email email = null;
             try
             {
-                email = await _context.Emails.FirstOrDefaultAsync(x => x.Info.Date == info.Date || x.Info.UniversalId == info.UniversalId);
-                _logger.LogDebug($"Сообщение {email.Id} возвращено из базы данных по идентификатору EmailInfo {info.Id}");
+                email = await _context.Emails.FirstOrDefaultAsync(x =>
+                    x.Info.Date == info.Date || x.Info.UniversalId == info.UniversalId);
+                _logger.LogDebug(
+                    $"Сообщение {email.Id} возвращено из базы данных по идентификатору EmailInfo {info.Id}");
             }
             catch
             {
                 _logger.LogError($"Сообщения с указанным Guid {info.UniversalId}  нет в базе данных");
             }
+
             return email;
         }
 
-        public async Task<int> GetCountByStatus(EmailStatus status)
+        public async Task<int> GetCountByStatusAsync(EmailStatus status)
         {
-            int count = 0;
+            var count = 0;
             try
             {
                 count = await _context.Emails.CountAsync(x => x.State.Status == status);
@@ -82,10 +80,11 @@ namespace EmailWebApi.Services
             {
                 _logger.LogError("Ошибка при выполнении COUNT");
             }
+
             return count;
         }
 
-        public async Task UpdateEmail(Email email)
+        public async Task UpdateEmailAsync(Email email)
         {
             try
             {
@@ -99,22 +98,7 @@ namespace EmailWebApi.Services
             }
         }
 
-        public async Task<Email> GetEmailById(int id)
-        {
-            Email email = null;
-            try
-            {
-                email =  await _context.Emails.FindAsync(id);
-                _logger.LogDebug($"Сообщение извлечено из базы данных по идентификатору {id}");
-            }
-            catch
-            {
-                _logger.LogError($"Сообщение под идентификатором {id} не найдено в базе данных");
-            }
-            return email;
-        }
-
-        public async Task<ThrottlingState> GetLastThrottlingState()
+        public async Task<ThrottlingState> GetLastThrottlingStateAsync()
         {
             ThrottlingState state = null;
             try
@@ -126,10 +110,11 @@ namespace EmailWebApi.Services
             {
                 _logger.LogError("Ошибка при получении последнего состояния");
             }
+
             return state;
         }
 
-        public async Task AddThrottlingState(ThrottlingState state)
+        public async Task AddThrottlingStateAsync(ThrottlingState state)
         {
             try
             {
@@ -139,13 +124,13 @@ namespace EmailWebApi.Services
             }
             catch
             {
-                _logger.LogError($"Указанное состояние запросов не может быть внесено в базу данных");
+                _logger.LogError("Указанное состояние запросов не может быть внесено в базу данных");
             }
         }
 
-        public async Task<List<Email>> GetEmailsByStatus(EmailStatus status)
+        public async Task<List<Email>> GetEmailsByStatusAsync(EmailStatus status)
         {
-            List<Email> emails = new List<Email>();
+            var emails = new List<Email>();
             try
             {
                 emails = await _context.Emails.Where(x => x.State.Status == status).ToListAsync();
@@ -155,12 +140,13 @@ namespace EmailWebApi.Services
             {
                 _logger.LogError($"Ошибка при получении списка сообщений со статусом {status}");
             }
+
             return emails;
         }
 
-        public async Task<int> GetAllCount()
+        public async Task<int> GetAllCountAsync()
         {
-            int count = 0;
+            var count = 0;
             try
             {
                 count = await _context.Emails.CountAsync();
@@ -170,6 +156,7 @@ namespace EmailWebApi.Services
             {
                 _logger.LogError("Невозможно выполнить COUNT");
             }
+
             return count;
         }
     }

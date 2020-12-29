@@ -14,7 +14,8 @@ namespace EmailWebApi
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => {
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
                     webBuilder.UseStartup<Startup>();
                     webBuilder.ConfigureLogging(x => x.AddConsole().AddDebug());
                 });

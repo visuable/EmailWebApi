@@ -1,4 +1,4 @@
-﻿namespace EmailWebApi.Objects
+﻿namespace EmailWebApi.Entities
 {
     public class JsonRequest<T>
     {

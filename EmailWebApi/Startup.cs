@@ -1,6 +1,8 @@
+using System.IO;
+using System.Text;
 using AutoMapper;
 using EmailWebApi.Database;
-using EmailWebApi.Objects.Settings;
+using EmailWebApi.Entities.Settings;
 using EmailWebApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,8 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.OpenApi.Models;
-using System.IO;
-using System.Text;
 
 namespace EmailWebApi
 {
@@ -36,7 +36,7 @@ namespace EmailWebApi
                 var xmlPath = Path.Combine(basePath, "EmailWebApi.xml");
                 options.IncludeXmlComments(xmlPath, true);
             });
-            services.ConfigureSwaggerGen(x => x.SwaggerDoc("emailWebApi", new OpenApiInfo()
+            services.ConfigureSwaggerGen(x => x.SwaggerDoc("emailWebApi", new OpenApiInfo
             {
                 Title = "Email Web Api",
                 Description = "Открытое Web Api для логгирования и отправки сообщений.",

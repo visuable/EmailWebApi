@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using EmailWebApi.Objects;
+using EmailWebApi.Entities;
 
 namespace EmailWebApi.Services
 {
