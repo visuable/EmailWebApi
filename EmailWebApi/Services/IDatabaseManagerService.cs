@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EmailWebApi.Entities;
+using EmailWebApi.Entities.Dto;
 
 namespace EmailWebApi.Services
 {
@@ -8,11 +9,10 @@ namespace EmailWebApi.Services
     {
         Task AddEmailAsync(Email email);
         Task UpdateEmailAsync(Email email);
-        Task AddThrottlingStateAsync(ThrottlingState state);
         Task<Email> GetEmailByEmailInfoAsync(EmailInfo info);
         Task<int> GetCountByStatusAsync(EmailStatus status);
         Task<int> GetAllCountAsync();
-        Task<ThrottlingState> GetLastThrottlingStateAsync();
+        Task<ThrottlingStateDto> GetThrottlingStateAsync();
         Task<List<Email>> GetEmailsByStatusAsync(EmailStatus status);
     }
 }

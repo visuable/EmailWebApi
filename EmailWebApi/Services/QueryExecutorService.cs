@@ -31,7 +31,7 @@ namespace EmailWebApi.Services
                     {
                         logger.LogDebug($"Отправка {message.Id} в фоновом режиме");
                         await emailTransferService.Send(message);
-                        await Task.Delay(5000, stoppingToken);
+                        await Task.Delay(1500, stoppingToken);
                     }
                 }
                 catch

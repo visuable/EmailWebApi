@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EmailWebApi.Entities;
+using EmailWebApi.Entities.Dto;
 using EmailWebApi.Entities.Settings;
 using EmailWebApi.Extensions;
 using Microsoft.Extensions.Logging;
@@ -15,7 +16,7 @@ namespace EmailWebApi.Services
         private readonly ILogger<ThrottlingService> _logger;
         private readonly IOptions<ThrottlingSettings> _options;
 
-        private ThrottlingState _latestState;
+        private ThrottlingStateDto _latestStateDto;
 
         public ThrottlingService(ILogger<ThrottlingService> logger, IEmailTransferService emailService,
             IOptions<ThrottlingSettings> options, IDatabaseManagerService databaseService)
@@ -28,12 +29,11 @@ namespace EmailWebApi.Services
 
         public async Task<EmailInfo> Invoke(Email email)
         {
-            _latestState = await _databaseService.GetLastThrottlingStateAsync();
+            _latestStateDto = await _databaseService.GetThrottlingStateAsync();
             if (ConsumeTime() && ConsumeCounter())
             {
                 var result = await _emailService.Send(email);
-                _latestState.UpdateAfterSending(email.Content.Address);
-                SaveThrottlingState();
+                _latestStateDto.UpdateAfterSending(email.Content.Address);
                 return result;
             }
 
@@ -45,29 +45,11 @@ namespace EmailWebApi.Services
                 return email.Info;
             }
 
-            if (!ConsumeTime())
-            {
-                _latestState.Refresh();
-                SaveThrottlingState();
-                return await Invoke(email);
-            }
-
             return new EmailInfo
             {
                 Date = DateTime.Now,
                 UniversalId = Guid.Empty
             };
-        }
-
-        private async Task SaveThrottlingState()
-        {
-            await _databaseService.AddThrottlingStateAsync(new ThrottlingState
-            {
-                Counter = _latestState.Counter,
-                EndPoint = _latestState.EndPoint,
-                LastAddress = _latestState.LastAddress,
-                LastAddressCounter = _latestState.LastAddressCounter
-            });
         }
 
         private bool ConsumeTime()
@@ -76,7 +58,7 @@ namespace EmailWebApi.Services
             try
             {
                 result = DateTimeOffset.Now.ToUnixTimeSeconds() <=
-                         new DateTimeOffset(_latestState.EndPoint).ToUnixTimeSeconds();
+                         new DateTimeOffset(_latestStateDto.EndPoint).ToUnixTimeSeconds();
                 _logger.LogDebug($"Результат проверки по времени: {result}");
             }
             catch
@@ -92,8 +74,8 @@ namespace EmailWebApi.Services
             var result = false;
             try
             {
-                result = _latestState.Counter < _options.Value.Limit &&
-                         _latestState.LastAddressCounter < _options.Value.AddressLimit;
+                result = _latestStateDto.Counter < _options.Value.Limit &&
+                         _latestStateDto.LastAddressCounter < _options.Value.AddressLimit;
             }
             catch
             {

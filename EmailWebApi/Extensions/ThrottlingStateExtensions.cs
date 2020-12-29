@@ -1,22 +1,23 @@
 ﻿using System;
 using EmailWebApi.Entities;
+using EmailWebApi.Entities.Dto;
 
 namespace EmailWebApi.Extensions
 {
     public static class ThrottlingStateExtensions
     {
-        public static void UpdateAfterSending(this ThrottlingState state, string lastAddress)
+        public static void UpdateAfterSending(this ThrottlingStateDto stateDto, string lastAddress)
         {
-            state.Counter++;
-            state.LastAddressCounter++;
-            state.LastAddress = lastAddress;
+            stateDto.Counter++;
+            stateDto.LastAddressCounter++;
+            stateDto.LastAddress = lastAddress;
         }
 
-        public static void Refresh(this ThrottlingState state)
+        public static void Refresh(this ThrottlingStateDto stateDto)
         {
-            state.Counter = 0;
-            state.LastAddressCounter = 0;
-            state.EndPoint = DateTime.Now.AddSeconds(60);
+            stateDto.Counter = 0;
+            stateDto.LastAddressCounter = 0;
+            stateDto.EndPoint = DateTime.Now.AddSeconds(60);
         }
     }
 }

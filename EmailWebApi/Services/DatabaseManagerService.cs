@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EmailWebApi.Database;
 using EmailWebApi.Entities;
+using EmailWebApi.Entities.Dto;
+using EmailWebApi.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -52,7 +55,7 @@ namespace EmailWebApi.Services
 
         public async Task<Email> GetEmailByEmailInfoAsync(EmailInfo info)
         {
-            Email email = null;
+            Email email = new Email();
             try
             {
                 email = await _context.Emails.FirstOrDefaultAsync(x =>
@@ -98,34 +101,28 @@ namespace EmailWebApi.Services
             }
         }
 
-        public async Task<ThrottlingState> GetLastThrottlingStateAsync()
+        public async Task<ThrottlingStateDto> GetThrottlingStateAsync()
         {
-            ThrottlingState state = null;
+            ThrottlingStateDto stateDto = new ThrottlingStateDto();
             try
             {
-                state = await _context.ThrottlingStates.OrderByDescending(x => x.EndPoint).FirstOrDefaultAsync();
-                _logger.LogDebug($"Извлечено последнее состояние с идентификатором {state.Id}");
+                var offset = DateTimeOffset.Now.AddSeconds(-60);
+                var first = await _context.Emails.FirstOrDefaultAsync();
+                stateDto.Counter = await _context.Emails.CountAsync(x => x.Info.Date >= offset);
+                stateDto.LastAddress = first.Content.Address;
+                stateDto.LastAddressCounter = await _context.Emails.CountAsync(x => x.Info.Date >= offset &&
+                                                                                    x.Content.Address ==
+                                                                                    stateDto.LastAddress);
+                stateDto.EndPoint = DateTime.Now;
+                _logger.LogDebug($"Извлечено последнее состояние");
             }
             catch
             {
+                stateDto.Refresh();
                 _logger.LogError("Ошибка при получении последнего состояния");
             }
 
-            return state;
-        }
-
-        public async Task AddThrottlingStateAsync(ThrottlingState state)
-        {
-            try
-            {
-                await _context.ThrottlingStates.AddAsync(state);
-                _context.SaveChanges();
-                _logger.LogDebug($"Состояние {state.Id} внесено в базу данных");
-            }
-            catch
-            {
-                _logger.LogError("Указанное состояние запросов не может быть внесено в базу данных");
-            }
+            return stateDto;
         }
 
         public async Task<List<Email>> GetEmailsByStatusAsync(EmailStatus status)
