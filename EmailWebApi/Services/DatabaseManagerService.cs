@@ -2,24 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EmailWebApi.Database;
-using EmailWebApi.Entities;
-using EmailWebApi.Entities.Dto;
+using EmailWebApi.Db.Entities;
+using EmailWebApi.Db.Entities.Dto;
+using EmailWebApi.Db.Repositories;
 using EmailWebApi.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace EmailWebApi.Services
 {
     public class DatabaseManagerService : IDatabaseManagerService
     {
-        private readonly EmailContext _context;
         private readonly ILogger<DatabaseManagerService> _logger;
+        private readonly IEmailRepository _repository;
 
-        public DatabaseManagerService(ILogger<DatabaseManagerService> logger, EmailContext context)
+        public DatabaseManagerService(ILogger<DatabaseManagerService> logger, IEmailRepository repository)
         {
             _logger = logger;
-            _context = context;
+            _repository = repository;
         }
 
         public async Task AddEmailAsync(Email email)
@@ -35,17 +34,17 @@ namespace EmailWebApi.Services
             {
                 if (copy.Content.Body.Save)
                 {
-                    await _context.Emails.AddAsync(email);
+                    await _repository.AddAsync(email);
                     _logger.LogDebug($"Сообщение {email.Id} внесено в базу данных с Body");
                 }
                 else
                 {
                     copy.Content.Body.Body = string.Empty;
-                    await _context.Emails.AddAsync(email);
+                    await _repository.AddAsync(email);
                     _logger.LogDebug($"Сообщение {email.Id} внесено в базу данных без Body");
                 }
 
-                _context.SaveChanges();
+                _repository.SaveChanges();
             }
             catch
             {
@@ -55,11 +54,11 @@ namespace EmailWebApi.Services
 
         public async Task<Email> GetEmailByEmailInfoAsync(EmailInfo info)
         {
-            Email email = new Email();
+            var email = new Email();
             try
             {
-                email = await _context.Emails.FirstOrDefaultAsync(x =>
-                    x.Info.Date == info.Date || x.Info.UniversalId == info.UniversalId);
+                email = _repository.GetListByPredicate(x =>
+                    x.Info.UniversalId == info.UniversalId || x.Info.Date == info.Date).FirstOrDefault();
                 _logger.LogDebug(
                     $"Сообщение {email.Id} возвращено из базы данных по идентификатору EmailInfo {info.Id}");
             }
@@ -76,7 +75,7 @@ namespace EmailWebApi.Services
             var count = 0;
             try
             {
-                count = await _context.Emails.CountAsync(x => x.State.Status == status);
+                count = await _repository.CountAsync(x => x.State.Status == status);
                 _logger.LogDebug($"Возвращено {count} записей в базе данных");
             }
             catch
@@ -91,8 +90,8 @@ namespace EmailWebApi.Services
         {
             try
             {
-                _context.Emails.Update(email);
-                await _context.SaveChangesAsync();
+                _repository.Update(email);
+                await _repository.SaveChangesAsync();
                 _logger.LogDebug($"Сообщение {email.Id} обновилось в базе данных");
             }
             catch
@@ -103,18 +102,18 @@ namespace EmailWebApi.Services
 
         public async Task<ThrottlingStateDto> GetThrottlingStateAsync()
         {
-            ThrottlingStateDto stateDto = new ThrottlingStateDto();
+            var stateDto = new ThrottlingStateDto();
             try
             {
                 var offset = DateTimeOffset.Now.AddSeconds(-60);
-                var first = await _context.Emails.FirstOrDefaultAsync();
-                stateDto.Counter = await _context.Emails.CountAsync(x => x.Info.Date >= offset);
+                var first = await _repository.GetFirstAsync();
+                stateDto.Counter = await _repository.CountAsync(x => x.Info.Date >= offset);
                 stateDto.LastAddress = first.Content.Address;
-                stateDto.LastAddressCounter = await _context.Emails.CountAsync(x => x.Info.Date >= offset &&
-                                                                                    x.Content.Address ==
-                                                                                    stateDto.LastAddress);
+                stateDto.LastAddressCounter = await _repository.CountAsync(x => x.Info.Date >= offset &&
+                                                                                x.Content.Address ==
+                                                                                stateDto.LastAddress);
                 stateDto.EndPoint = DateTime.Now;
-                _logger.LogDebug($"Извлечено последнее состояние");
+                _logger.LogDebug("Извлечено последнее состояние");
             }
             catch
             {
@@ -130,7 +129,7 @@ namespace EmailWebApi.Services
             var emails = new List<Email>();
             try
             {
-                emails = await _context.Emails.Where(x => x.State.Status == status).ToListAsync();
+                emails = (await _repository.GetListByPredicateAsync(x => x.State.Status == status)).ToList();
                 _logger.LogDebug($"Получение списка сообщений со статусом {status}");
             }
             catch
@@ -146,7 +145,7 @@ namespace EmailWebApi.Services
             var count = 0;
             try
             {
-                count = await _context.Emails.CountAsync();
+                count = await _repository.CountAsync();
                 _logger.LogDebug($"Получено количество всех записей {count}");
             }
             catch

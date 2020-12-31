@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using EmailWebApi.Entities;
-using EmailWebApi.Entities.Dto;
+using EmailWebApi.Db.Entities;
+using EmailWebApi.Db.Entities.Dto;
 using Microsoft.Extensions.Logging;
 
 namespace EmailWebApi.Services

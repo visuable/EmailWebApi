@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using EmailWebApi.Entities;
-using EmailWebApi.Entities.Settings;
+using EmailWebApi.Db.Entities;
+using EmailWebApi.Db.Entities.Settings;
 using EmailWebApi.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

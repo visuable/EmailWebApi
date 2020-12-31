@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
-using EmailWebApi.Entities;
-using EmailWebApi.Entities.Dto;
+using EmailWebApi.Db.Entities;
+using EmailWebApi.Db.Entities.Dto;
 using EmailWebApi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

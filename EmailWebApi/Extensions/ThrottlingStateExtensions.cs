@@ -1,6 +1,5 @@
 ﻿using System;
-using EmailWebApi.Entities;
-using EmailWebApi.Entities.Dto;
+using EmailWebApi.Db.Entities.Dto;
 
 namespace EmailWebApi.Extensions
 {

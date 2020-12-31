@@ -1,8 +1,9 @@
 using System.IO;
 using System.Text;
 using AutoMapper;
-using EmailWebApi.Database;
-using EmailWebApi.Entities.Settings;
+using EmailWebApi.Db.Database;
+using EmailWebApi.Db.Entities.Settings;
+using EmailWebApi.Db.Repositories;
 using EmailWebApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,6 +48,7 @@ namespace EmailWebApi
             services.AddScoped<IStatusService, StatusService>();
             services.AddScoped<IThrottlingService, ThrottlingService>();
             services.AddScoped<IEmailTransferService, EmailTransferService>();
+            services.AddScoped<IEmailRepository, DbContextEmailRepository>();
 
             services.Configure<SmtpSettings>(Configuration.GetSection("SmtpSettings"));
             services.Configure<ThrottlingSettings>(Configuration.GetSection("ThrottlingSettings"));
