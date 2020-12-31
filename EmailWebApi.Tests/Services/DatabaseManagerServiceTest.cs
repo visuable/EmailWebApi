@@ -36,8 +36,6 @@ namespace EmailWebApi.Tests.Services
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            services.AddHostedService<QueryExecutorService>();
-
             _provider = services.BuildServiceProvider();
         }
 
