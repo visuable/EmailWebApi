@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
 
-namespace EmailWebApi.Services
+namespace EmailWebApi.Services.Interfaces
 {
     public interface IThrottlingService
     {

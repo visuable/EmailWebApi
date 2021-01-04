@@ -5,6 +5,8 @@ using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Entities.Settings;
 using EmailWebApi.Db.Repositories;
 using EmailWebApi.Services;
+using EmailWebApi.Services.Classes;
+using EmailWebApi.Services.Interfaces;
 using EmailWebApi.Tests.Fakes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,8 +27,7 @@ namespace EmailWebApi.Tests.Services
 
             services.AddScoped<IStatusService, StatusService>();
             services.AddScoped<IThrottlingService, FakeThrottlingService>();
-            services.AddScoped<IEmailRepository, FakeEmailRepository>();
-            services.AddScoped<IDatabaseManagerService, DatabaseManagerService>();
+            services.AddScoped<IRepository<Email>, FakeEmailRepository>();
 
             services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
             services.Configure<ThrottlingSettings>(_configuration.GetSection("ThrottlingSettings"));
@@ -48,23 +49,23 @@ namespace EmailWebApi.Tests.Services
         {
             //Arrange
             var service = _provider.GetRequiredService<IStatusService>();
-            var repository = _provider.GetRequiredService<IEmailRepository>();
+            var repository = _provider.GetRequiredService<IRepository<Email>>();
 
-            await repository.AddAsync(new Email
+            await repository.InsertAsync(new Email
             {
                 State = new EmailState
                 {
                     Status = EmailStatus.Error
                 }
             });
-            await repository.AddAsync(new Email
+            await repository.InsertAsync(new Email
             {
                 State = new EmailState
                 {
                     Status = EmailStatus.Sent
                 }
             });
-            await repository.AddAsync(new Email
+            await repository.InsertAsync(new Email
             {
                 State = new EmailState
                 {
@@ -84,9 +85,9 @@ namespace EmailWebApi.Tests.Services
         {
             //Arrange
             var service = _provider.GetRequiredService<IStatusService>();
-            var repository = _provider.GetRequiredService<IEmailRepository>();
+            var repository = _provider.GetRequiredService<IRepository<Email>>();
 
-            await repository.AddAsync(new Email
+            await repository.InsertAsync(new Email
             {
                 State = new EmailState
                 {

@@ -9,58 +9,87 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EmailWebApi.Db.Repositories
 {
-    public class DbContextEmailRepository : IEmailRepository
+    /// <summary>
+    /// Репозиторий сообщений в базе данных.
+    /// </summary>
+    public class DbContextEmailRepository : IRepository<Email>
     {
-        private readonly EmailContext _context;
+        private readonly EmailContext _emailContext;
 
-        public DbContextEmailRepository(EmailContext context)
+        public DbContextEmailRepository(EmailContext emailContext)
         {
-            _context = context;
+            _emailContext = emailContext;
         }
-
-        public async Task<int> CountAsync(Expression<Func<Email, bool>> predicate)
+        /// <summary>
+        /// Первое сообщение из списка по предикату.
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns>Email</returns>
+        public async Task<Email> FirstAsync(Expression<Func<Email, bool>> predicate)
         {
-            return await _context.Emails.CountAsync(predicate);
+            return await _emailContext.Emails.FirstAsync(predicate);
         }
-
-        public async Task AddAsync(Email item)
+        /// <summary>
+        /// Первое сообщение из списка.
+        /// </summary>
+        /// <returns>Email</returns>
+        public async Task<Email> FirstAsync()
         {
-            await _context.Emails.AddAsync(item);
+            return await _emailContext.Emails.FirstAsync();
         }
-
-        public void SaveChanges()
+        /// <summary>
+        /// Все сообщения по предикату.
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<Email>> GetAllAsync(Func<Email, bool> predicate)
         {
-            _context.SaveChanges();
+            return (await _emailContext.Emails.ToListAsync()).Where(predicate);
         }
-
-        public void Update(Email item)
+        /// <summary>
+        /// Все сообщения.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<Email>> GetAllAsync()
         {
-            _context.Update(item);
+            return await _emailContext.Emails.ToListAsync();
         }
-
-        public async Task<int> CountAsync()
+        /// <summary>
+        /// Количество сообщений по предикату.
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns>int</returns>
+        public async Task<int> GetCountAsync(Expression<Func<Email, bool>> predicate)
         {
-            return await _context.Emails.CountAsync();
+            return await _emailContext.Emails.CountAsync(predicate);
         }
-
-        public async Task SaveChangesAsync()
+        /// <summary>
+        /// Количество всех сообщений.
+        /// </summary>
+        /// <returns>int</returns>
+        public async Task<int> GetCountAsync()
         {
-            await _context.SaveChangesAsync();
+            return await _emailContext.Emails.CountAsync();
         }
-
-        public async Task<Email> GetFirstAsync()
+        /// <summary>
+        /// Добавить сообщение в базу данных.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public async Task InsertAsync(Email entity)
         {
-            return await _context.Emails.FirstOrDefaultAsync();
+            await _emailContext.Emails.AddAsync(entity);
+            await _emailContext.SaveChangesAsync();
         }
-
-        public IEnumerable<Email> GetListByPredicate(Expression<Func<Email, bool>> predicate)
+        /// <summary>
+        /// Обновить сообщение в базе данных.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public async Task UpdateAsync(Email entity)
         {
-            return _context.Emails.Where(predicate.Compile());
-        }
-
-        public async Task<IEnumerable<Email>> GetListByPredicateAsync(Expression<Func<Email, bool>> predicate)
-        {
-            return (await _context.Emails.ToListAsync()).Where(predicate.Compile());
+            _emailContext.Emails.Update(entity);
+            await _emailContext.SaveChangesAsync();
         }
     }
 }

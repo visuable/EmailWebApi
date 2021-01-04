@@ -2,7 +2,7 @@
 using AutoMapper;
 using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Entities.Dto;
-using EmailWebApi.Services;
+using EmailWebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

@@ -3,19 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
+using EmailWebApi.Db.Repositories;
 using EmailWebApi.Services;
+using EmailWebApi.Services.Interfaces;
 
 namespace EmailWebApi.Tests.Fakes
 {
     public class FakeEmailTransferService : IEmailTransferService
     {
-        public Task<EmailInfo> Send(Email email)
+        private IRepository<Email> _repository;
+
+        public FakeEmailTransferService(IRepository<Email> repository)
         {
-            return Task.FromResult(new EmailInfo()
+            _repository = repository;
+        }
+
+        public async Task<EmailInfo> Send(Email email)
+        {
+            await _repository.InsertAsync(email);
+            return new EmailInfo()
             {
                 Date = DateTime.Now,
                 UniversalId = Guid.NewGuid()
-            });
+            };
         }
     }
 }

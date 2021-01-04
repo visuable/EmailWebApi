@@ -7,6 +7,8 @@ using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Entities.Dto;
 using EmailWebApi.Db.Entities.Settings;
 using EmailWebApi.Services;
+using EmailWebApi.Services.Classes;
+using EmailWebApi.Services.Interfaces;
 using EmailWebApi.Tests.Fakes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

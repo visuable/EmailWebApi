@@ -1,20 +1,29 @@
 ﻿using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Entities.Dto;
+using EmailWebApi.Db.Repositories;
+using EmailWebApi.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace EmailWebApi.Services
+namespace EmailWebApi.Services.Classes
 {
+    /// <summary>
+    /// Сервис статистики приложения. 
+    /// </summary>
     public class StatusService : IStatusService
     {
-        private readonly IDatabaseManagerService _databaseService;
         private readonly ILogger<StatusService> _logger;
+        private readonly IRepository<Email> _repository;
 
-        public StatusService(ILogger<StatusService> logger, IDatabaseManagerService databaseService)
+        public StatusService(ILogger<StatusService> logger, IRepository<Email> repository)
         {
             _logger = logger;
-            _databaseService = databaseService;
+            _repository = repository;
         }
+        /// <summary>
+        /// Возвращает общую статистику приложения.
+        /// </summary>
+        /// <returns>ApplicationStateDto</returns>
 
         public async Task<ApplicationStateDto> GetApplicationState()
         {
@@ -23,10 +32,10 @@ namespace EmailWebApi.Services
             {
                 applicationState = new ApplicationStateDto
                 {
-                    Total = await _databaseService.GetAllCountAsync(),
-                    Error = await _databaseService.GetCountByStatusAsync(EmailStatus.Error),
-                    Query = await _databaseService.GetCountByStatusAsync(EmailStatus.Query),
-                    Sent = await _databaseService.GetCountByStatusAsync(EmailStatus.Sent)
+                    Total = await _repository.GetCountAsync(),
+                    Error = await _repository.GetCountAsync(x => x.State.Status == EmailStatus.Error),
+                    Query = await _repository.GetCountAsync(x => x.State.Status == EmailStatus.Query),
+                    Sent = await _repository.GetCountAsync(x => x.State.Status == EmailStatus.Sent)
                 };
                 _logger.LogDebug("Возвращен статус приложения");
             }
@@ -37,13 +46,18 @@ namespace EmailWebApi.Services
 
             return applicationState;
         }
-
+        /// <summary>
+        /// Возвращает информацию о сообщении.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns>EmailState</returns>
         public async Task<EmailState> GetEmailState(EmailInfo info)
         {
             var result = new EmailState();
             try
             {
-                result = (await _databaseService.GetEmailByEmailInfoAsync(info)).State;
+                result = (await _repository.FirstAsync(x =>
+                    x.Info.UniversalId == info.UniversalId || x.Info.Date == info.Date)).State;
                 _logger.LogDebug("Получена информация по сообщению");
             }
             catch

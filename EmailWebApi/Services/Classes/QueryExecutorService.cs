@@ -1,12 +1,19 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
+using EmailWebApi.Db.Entities.Settings;
+using EmailWebApi.Db.Repositories;
+using EmailWebApi.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace EmailWebApi.Services
+namespace EmailWebApi.Services.Classes
 {
+    /// <summary>
+    /// Фоновый сервис отправки очереди сообщений.
+    /// </summary>
     public class QueryExecutorService : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory;
@@ -24,14 +31,16 @@ namespace EmailWebApi.Services
                 try
                 {
                     var emailTransferService = scope.ServiceProvider.GetRequiredService<IEmailTransferService>();
-                    var databaseManagerService = scope.ServiceProvider.GetRequiredService<IDatabaseManagerService>();
+                    var emailRepository = scope.ServiceProvider.GetRequiredService<IRepository<Email>>();
                     var logger = scope.ServiceProvider.GetRequiredService<ILogger<QueryExecutorService>>();
-                    var queryMessages = await databaseManagerService.GetEmailsByStatusAsync(EmailStatus.Query);
+                    var settings = scope.ServiceProvider.GetRequiredService<IOptions<QueryExecutorSettings>>();
+
+                    var queryMessages = await emailRepository.GetAllAsync(x => x.State?.Status == EmailStatus.Query);
                     foreach (var message in queryMessages)
                     {
                         logger.LogDebug($"Отправка {message.Id} в фоновом режиме");
                         await emailTransferService.Send(message);
-                        await Task.Delay(1500, stoppingToken);
+                        await Task.Delay(settings.Value.Delay, stoppingToken);
                     }
                 }
                 catch

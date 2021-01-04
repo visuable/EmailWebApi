@@ -8,7 +8,7 @@ using EmailWebApi.Db.Repositories;
 
 namespace EmailWebApi.Tests.Fakes
 {
-    public class FakeEmailRepository : IEmailRepository
+    public class FakeEmailRepository : IRepository<Email>
     {
         public FakeEmailRepository()
         {
@@ -17,50 +17,47 @@ namespace EmailWebApi.Tests.Fakes
 
         public List<Email> Emails { get; set; }
 
-        public Task<int> CountAsync(Expression<Func<Email, bool>> predicate)
-        {
-            return Task.FromResult(Emails.Count(predicate.Compile()));
-        }
-
-        public Task AddAsync(Email item)
+        public Task InsertAsync(Email item)
         {
             Emails.Add(item);
             return Task.CompletedTask;
         }
 
-        public void SaveChanges()
-        {
-        }
-
-        public void Update(Email item)
+        public Task UpdateAsync(Email item)
         {
             var last = Emails.FirstOrDefault(x => x.Content.Body.Body == item.Content.Body.Body);
             Emails[last.Id] = item;
-        }
-
-        public Task<int> CountAsync()
-        {
-            return Task.FromResult(Emails.Count);
-        }
-
-        public Task SaveChangesAsync()
-        {
             return Task.CompletedTask;
         }
 
-        public Task<Email> GetFirstAsync()
+        public Task<Email> FirstAsync(Expression<Func<Email, bool>> predicate)
+        {
+            return Task.FromResult(Emails.FirstOrDefault(predicate.Compile()));
+        }
+
+        public Task<Email> FirstAsync()
         {
             return Task.FromResult(Emails.FirstOrDefault());
         }
 
-        public IEnumerable<Email> GetListByPredicate(Expression<Func<Email, bool>> predicate)
+        public Task<IEnumerable<Email>> GetAllAsync(Func<Email, bool> predicate)
         {
-            return Emails.Where(predicate.Compile());
+            return Task.FromResult(Emails.Where(predicate));
         }
 
-        public Task<IEnumerable<Email>> GetListByPredicateAsync(Expression<Func<Email, bool>> predicate)
+        public Task<int> GetCountAsync(Expression<Func<Email, bool>> predicate)
         {
-            return Task.FromResult(Emails.Where(predicate.Compile()));
+            return Task.FromResult(Emails.Count(predicate.Compile()));
+        }
+
+        public async Task<IEnumerable<Email>> GetAllAsync()
+        {
+            return Emails;
+        }
+
+        public Task<int> GetCountAsync()
+        {
+            return Task.FromResult(Emails.Count);
         }
     }
 }

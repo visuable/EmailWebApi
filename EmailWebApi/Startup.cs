@@ -2,9 +2,11 @@ using System.IO;
 using System.Text;
 using AutoMapper;
 using EmailWebApi.Db.Database;
+using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Entities.Settings;
 using EmailWebApi.Db.Repositories;
-using EmailWebApi.Services;
+using EmailWebApi.Services.Classes;
+using EmailWebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -43,23 +45,24 @@ namespace EmailWebApi
                 Description = "Открытое Web Api для логгирования и отправки сообщений.",
                 Version = "1b"
             }));
+            services.Configure<SmtpSettings>(Configuration.GetSection("SmtpSettings"));
+            services.Configure<ThrottlingSettings>(Configuration.GetSection("ThrottlingSettings"));
+            services.Configure<QueryExecutorSettings>(Configuration.GetSection("QueryExecutorSettings"));
 
-            services.AddScoped<IDatabaseManagerService, DatabaseManagerService>();
             services.AddScoped<IStatusService, StatusService>();
             services.AddScoped<IThrottlingService, ThrottlingService>();
             services.AddScoped<IEmailTransferService, EmailTransferService>();
-            services.AddScoped<IEmailRepository, DbContextEmailRepository>();
-
-            services.Configure<SmtpSettings>(Configuration.GetSection("SmtpSettings"));
-            services.Configure<ThrottlingSettings>(Configuration.GetSection("ThrottlingSettings"));
+            services.AddScoped<IRepository<Email>, DbContextEmailRepository>();
+            services.AddScoped<IDateTimeService, SystemDateTimeService>();
+            services.AddScoped<IThrottlingStateProviderService, ThrottlingStateProviderService>();
+            services.AddScoped<ISmtpClientFactoryService, SmtpClientFactoryService>();
 
             services.AddDbContext<EmailContext>(x =>
                 x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
             services.AddAutoMapper(typeof(Startup));
+            services.AddHostedService<QueryExecutorService>();
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            services.AddHostedService<QueryExecutorService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

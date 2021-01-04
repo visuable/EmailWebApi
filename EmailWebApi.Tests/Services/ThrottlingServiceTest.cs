@@ -8,6 +8,8 @@ using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Entities.Settings;
 using EmailWebApi.Db.Repositories;
 using EmailWebApi.Services;
+using EmailWebApi.Services.Classes;
+using EmailWebApi.Services.Interfaces;
 using EmailWebApi.Tests.Fakes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,10 +29,10 @@ namespace EmailWebApi.Tests.Services
             services.AddOptions();
 
             services.AddScoped<IThrottlingService, ThrottlingService>();
-            services.AddScoped<IEmailRepository, FakeEmailRepository>();
+            services.AddScoped<IRepository<Email>, FakeEmailRepository>();
+            services.AddTransient<IDateTimeService, SystemDateTimeService>();
+            services.AddScoped<IThrottlingStateProviderService, ThrottlingStateProviderService>();
             services.AddScoped<IEmailTransferService, FakeEmailTransferService>();
-
-            services.AddScoped<IDatabaseManagerService, DatabaseManagerService>();
 
             services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
             services.Configure<ThrottlingSettings>(_configuration.GetSection("ThrottlingSettings"));
@@ -50,8 +52,8 @@ namespace EmailWebApi.Tests.Services
         {
             //Arrange
             var service = _provider.GetRequiredService<IThrottlingService>();
-            var repository = _provider.GetRequiredService<IEmailRepository>();
-            await repository.AddAsync(new Email()
+            var repository = _provider.GetRequiredService<IRepository<Email>>();
+            await repository.InsertAsync(new Email()
             {
                 Content = new EmailContent()
                 {
@@ -85,7 +87,7 @@ namespace EmailWebApi.Tests.Services
             }
 
             //Assert
-            Assert.Equal(1, await repository.CountAsync(x => x.State.Status == EmailStatus.Query));
+            Assert.Equal(2, repository.GetCountAsync(x => x.State?.Status == EmailStatus.Query));
         }
     }
 }
