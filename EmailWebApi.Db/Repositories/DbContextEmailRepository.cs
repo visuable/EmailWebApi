@@ -47,12 +47,12 @@ namespace EmailWebApi.Db.Repositories
             return (await _emailContext.Emails.ToListAsync()).Where(predicate);
         }
         /// <summary>
-        /// Все сообщения.
+        /// Последнее сообщение.
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<Email>> GetAllAsync()
+        public async Task<Email> LastAsync()
         {
-            return await _emailContext.Emails.ToListAsync();
+            return await _emailContext.Emails.OrderBy(x => x.Info.Date).LastAsync();
         }
         /// <summary>
         /// Количество сообщений по предикату.

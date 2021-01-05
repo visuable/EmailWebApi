@@ -47,10 +47,10 @@ namespace EmailWebApi.Db.Repositories
         /// <returns>Email</returns>
         Task<TEntity> FirstAsync();
         /// <summary>
-        /// Все элементы.
+        /// Последний элемент.
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<TEntity> LastAsync();
         /// <summary>
         /// Количество всех элементов.
         /// </summary>

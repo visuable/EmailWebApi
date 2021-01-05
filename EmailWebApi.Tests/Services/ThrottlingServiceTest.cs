@@ -74,7 +74,7 @@ namespace EmailWebApi.Tests.Services
             });
 
             //Act
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var email = new Email()
                 {
@@ -87,7 +87,7 @@ namespace EmailWebApi.Tests.Services
             }
 
             //Assert
-            Assert.Equal(2, repository.GetCountAsync(x => x.State?.Status == EmailStatus.Query));
+            Assert.Equal(1, await repository.GetCountAsync(x => x.State.Status == EmailStatus.Query));
         }
     }
 }

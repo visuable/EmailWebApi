@@ -30,7 +30,7 @@ namespace EmailWebApi.Services.Classes
             var offset = _dateTime.Now.AddMinutes(-1);
             try
             {
-                var latestEmail = await _emailRepository.FirstAsync();
+                var latestEmail = await _emailRepository.LastAsync();
                 state.Counter = await _emailRepository.GetCountAsync(x => _dateTime.Now >= offset);
                 state.LastAddress = latestEmail.Content.Address;
                 state.LastAddressCounter = await _emailRepository.GetCountAsync(x =>

@@ -50,9 +50,9 @@ namespace EmailWebApi.Tests.Fakes
             return Task.FromResult(Emails.Count(predicate.Compile()));
         }
 
-        public async Task<IEnumerable<Email>> GetAllAsync()
+        public Task<Email> LastAsync()
         {
-            return Emails;
+            return Task.FromResult(Emails.OrderBy(x => x.Info.Date).Last());
         }
 
         public Task<int> GetCountAsync()

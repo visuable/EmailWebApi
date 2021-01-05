@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Repositories;
+using EmailWebApi.Extensions;
 using EmailWebApi.Services;
 using EmailWebApi.Services.Interfaces;
 
@@ -20,6 +21,7 @@ namespace EmailWebApi.Tests.Fakes
 
         public async Task<EmailInfo> Send(Email email)
         {
+            email.SetState(EmailStatus.Sent);
             await _repository.InsertAsync(email);
             return new EmailInfo()
             {
