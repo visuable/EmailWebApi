@@ -3,23 +3,27 @@
     public class SmtpSettings
     {
         /// <summary>
-        /// Хостинг.
+        ///     Хостинг.
         /// </summary>
         public string Host { get; set; }
+
         /// <summary>
-        /// Порт.
+        ///     Порт.
         /// </summary>
         public int Port { get; set; }
+
         /// <summary>
-        /// Имя пользователя.
+        ///     Имя пользователя.
         /// </summary>
         public string Username { get; set; }
+
         /// <summary>
-        /// Пароль.
+        ///     Пароль.
         /// </summary>
         public string Password { get; set; }
+
         /// <summary>
-        /// Почта отправителя.
+        ///     Почта отправителя.
         /// </summary>
         public string SenderEmail { get; set; }
     }

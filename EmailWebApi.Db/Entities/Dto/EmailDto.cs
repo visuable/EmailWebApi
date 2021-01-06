@@ -3,7 +3,7 @@
     public class EmailDto
     {
         /// <summary>
-        /// Содержимое письма.
+        ///     Содержимое письма.
         /// </summary>
         public EmailContentDto Content { get; set; }
     }

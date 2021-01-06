@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 namespace EmailWebApi.Services.Classes
 {
     /// <summary>
-    /// Фоновый сервис отправки очереди сообщений.
+    ///     Фоновый сервис отправки очереди сообщений.
     /// </summary>
     public class QueryExecutorService : BackgroundService
     {

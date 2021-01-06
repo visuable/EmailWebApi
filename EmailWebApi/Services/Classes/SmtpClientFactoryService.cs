@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
-using System.Threading.Tasks;
 using EmailWebApi.Db.Entities.Settings;
 using EmailWebApi.Services.Interfaces;
 using Microsoft.Extensions.Options;
@@ -11,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace EmailWebApi.Services.Classes
 {
     /// <summary>
-    /// Создает экземпляр SmtpClient с заданными настройками.
+    ///     Создает экземпляр SmtpClient с заданными настройками.
     /// </summary>
     public class SmtpClientFactoryService : ISmtpClientFactoryService
     {
@@ -21,8 +17,9 @@ namespace EmailWebApi.Services.Classes
         {
             _options = options;
         }
+
         /// <summary>
-        /// Создает SmtpClient.
+        ///     Создает SmtpClient.
         /// </summary>
         /// <returns>SmtpClient</returns>
         public SmtpClient Create()

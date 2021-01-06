@@ -5,19 +5,24 @@ namespace EmailWebApi.Db.Entities
     public class Email
     {
         /// <summary>
-        /// Содержание сообщения.
+        ///     Содержание сообщения.
         /// </summary>
-        [NotNull] public virtual EmailContent Content { get; set; }
+        [NotNull]
+        public virtual EmailContent Content { get; set; }
+
         /// <summary>
-        /// Информация сообщения.
+        ///     Информация сообщения.
         /// </summary>
 
-        [NotNull] public virtual EmailInfo Info { get; set; }
+        [NotNull]
+        public virtual EmailInfo Info { get; set; }
+
         /// <summary>
-        /// Состояние сообщения.
+        ///     Состояние сообщения.
         /// </summary>
 
-        [NotNull] public virtual EmailState State { get; set; }
+        [NotNull]
+        public virtual EmailState State { get; set; }
 
         public int Id { get; set; }
     }

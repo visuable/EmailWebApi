@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Repositories;
@@ -14,8 +12,6 @@ namespace EmailWebApi.Tests.Services
 {
     public class ThrottlingStateProviderServiceTest
     {
-        private IServiceProvider _provider;
-
         public ThrottlingStateProviderServiceTest()
         {
             var services = new ServiceCollection();
@@ -24,6 +20,9 @@ namespace EmailWebApi.Tests.Services
             services.AddScoped<IThrottlingStateProviderService, ThrottlingStateProviderService>();
             _provider = services.BuildServiceProvider();
         }
+
+        private readonly IServiceProvider _provider;
+
         [Fact]
         public async Task GetAsync()
         {
@@ -32,19 +31,19 @@ namespace EmailWebApi.Tests.Services
             var repository = _provider.GetRequiredService<IRepository<Email>>();
             var time = _provider.GetRequiredService<IDateTimeService>();
 
-            await repository.InsertAsync(new Email()
+            await repository.InsertAsync(new Email
             {
-                Content = new EmailContent()
+                Content = new EmailContent
                 {
                     Address = "test@test.test",
-                    Body = new EmailBody()
+                    Body = new EmailBody
                     {
-                        Body = String.Empty,
+                        Body = string.Empty,
                         Save = false
                     },
                     Title = "test"
                 },
-                Info = new EmailInfo()
+                Info = new EmailInfo
                 {
                     Date = time.Now.DateTime
                 }
@@ -59,19 +58,19 @@ namespace EmailWebApi.Tests.Services
             Assert.Equal("test@test.test", result.LastAddress);
 
             //Arrange
-            await repository.InsertAsync(new Email()
+            await repository.InsertAsync(new Email
             {
-                Content = new EmailContent()
+                Content = new EmailContent
                 {
                     Address = "test@test",
-                    Body = new EmailBody()
+                    Body = new EmailBody
                     {
-                        Body = String.Empty,
+                        Body = string.Empty,
                         Save = false
                     },
                     Title = "test"
                 },
-                Info = new EmailInfo()
+                Info = new EmailInfo
                 {
                     Date = time.Now.DateTime
                 }

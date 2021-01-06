@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 namespace EmailWebApi.Services.Classes
 {
     /// <summary>
-    /// Ограничивающий сервис по количеству запросов в минуту.
+    ///     Ограничивающий сервис по количеству запросов в минуту.
     /// </summary>
     public class ThrottlingService : IThrottlingService
     {
@@ -36,8 +36,9 @@ namespace EmailWebApi.Services.Classes
             _stateProvider = stateProvider;
             _dateTime = dateTime;
         }
+
         /// <summary>
-        /// Возвращает информацию о сообщении.
+        ///     Возвращает информацию о сообщении.
         /// </summary>
         /// <param name="email"></param>
         /// <returns>EmailInfo</returns>

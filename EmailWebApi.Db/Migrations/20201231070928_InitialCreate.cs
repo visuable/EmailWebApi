@@ -8,137 +8,128 @@ namespace EmailWebApi.Db.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Bodies",
-                columns: table => new
+                "Bodies",
+                table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>("int")
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Body = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Save = table.Column<bool>(type: "bit", nullable: false)
+                    Body = table.Column<string>("nvarchar(max)", nullable: true),
+                    Save = table.Column<bool>("bit")
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Bodies", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Bodies", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "Infos",
-                columns: table => new
+                "Infos",
+                table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>("int")
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UniversalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UniversalId = table.Column<Guid>("uniqueidentifier"),
+                    Date = table.Column<DateTime>("datetime2")
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Infos", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Infos", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "States",
-                columns: table => new
+                "States",
+                table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>("int")
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>("int")
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_States", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_States", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "Contents",
-                columns: table => new
+                "Contents",
+                table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>("int")
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BodyId = table.Column<int>(type: "int", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Address = table.Column<string>("nvarchar(max)", nullable: true),
+                    BodyId = table.Column<int>("int", nullable: true),
+                    Title = table.Column<string>("nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Contents", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Contents_Bodies_BodyId",
-                        column: x => x.BodyId,
-                        principalTable: "Bodies",
-                        principalColumn: "Id",
+                        "FK_Contents_Bodies_BodyId",
+                        x => x.BodyId,
+                        "Bodies",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Emails",
-                columns: table => new
+                "Emails",
+                table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>("int")
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ContentId = table.Column<int>(type: "int", nullable: true),
-                    InfoId = table.Column<int>(type: "int", nullable: true),
-                    StateId = table.Column<int>(type: "int", nullable: true)
+                    ContentId = table.Column<int>("int", nullable: true),
+                    InfoId = table.Column<int>("int", nullable: true),
+                    StateId = table.Column<int>("int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Emails", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Emails_Contents_ContentId",
-                        column: x => x.ContentId,
-                        principalTable: "Contents",
-                        principalColumn: "Id",
+                        "FK_Emails_Contents_ContentId",
+                        x => x.ContentId,
+                        "Contents",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Emails_Infos_InfoId",
-                        column: x => x.InfoId,
-                        principalTable: "Infos",
-                        principalColumn: "Id",
+                        "FK_Emails_Infos_InfoId",
+                        x => x.InfoId,
+                        "Infos",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Emails_States_StateId",
-                        column: x => x.StateId,
-                        principalTable: "States",
-                        principalColumn: "Id",
+                        "FK_Emails_States_StateId",
+                        x => x.StateId,
+                        "States",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Contents_BodyId",
-                table: "Contents",
-                column: "BodyId");
+                "IX_Contents_BodyId",
+                "Contents",
+                "BodyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Emails_ContentId",
-                table: "Emails",
-                column: "ContentId");
+                "IX_Emails_ContentId",
+                "Emails",
+                "ContentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Emails_InfoId",
-                table: "Emails",
-                column: "InfoId");
+                "IX_Emails_InfoId",
+                "Emails",
+                "InfoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Emails_StateId",
-                table: "Emails",
-                column: "StateId");
+                "IX_Emails_StateId",
+                "Emails",
+                "StateId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Emails");
+                "Emails");
 
             migrationBuilder.DropTable(
-                name: "Contents");
+                "Contents");
 
             migrationBuilder.DropTable(
-                name: "Infos");
+                "Infos");
 
             migrationBuilder.DropTable(
-                name: "States");
+                "States");
 
             migrationBuilder.DropTable(
-                name: "Bodies");
+                "Bodies");
         }
     }
 }

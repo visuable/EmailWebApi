@@ -3,12 +3,12 @@
 namespace EmailWebApi.Services.Interfaces
 {
     /// <summary>
-    /// Предоставляет время и дату.
+    ///     Предоставляет время и дату.
     /// </summary>
     public interface IDateTimeService
     {
         /// <summary>
-        /// Сейчас.
+        ///     Сейчас.
         /// </summary>
         DateTimeOffset Now { get; set; }
     }

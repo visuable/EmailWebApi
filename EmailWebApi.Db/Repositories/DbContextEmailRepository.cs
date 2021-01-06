@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace EmailWebApi.Db.Repositories
 {
     /// <summary>
-    /// Репозиторий сообщений в базе данных.
+    ///     Репозиторий сообщений в базе данных.
     /// </summary>
     public class DbContextEmailRepository : IRepository<Email>
     {
@@ -20,8 +20,9 @@ namespace EmailWebApi.Db.Repositories
         {
             _emailContext = emailContext;
         }
+
         /// <summary>
-        /// Первое сообщение из списка по предикату.
+        ///     Первое сообщение из списка по предикату.
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns>Email</returns>
@@ -29,16 +30,18 @@ namespace EmailWebApi.Db.Repositories
         {
             return await _emailContext.Emails.FirstAsync(predicate);
         }
+
         /// <summary>
-        /// Первое сообщение из списка.
+        ///     Первое сообщение из списка.
         /// </summary>
         /// <returns>Email</returns>
         public async Task<Email> FirstAsync()
         {
             return await _emailContext.Emails.FirstAsync();
         }
+
         /// <summary>
-        /// Все сообщения по предикату.
+        ///     Все сообщения по предикату.
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
@@ -46,16 +49,18 @@ namespace EmailWebApi.Db.Repositories
         {
             return (await _emailContext.Emails.ToListAsync()).Where(predicate);
         }
+
         /// <summary>
-        /// Последнее сообщение.
+        ///     Последнее сообщение.
         /// </summary>
         /// <returns></returns>
         public async Task<Email> LastAsync()
         {
             return await _emailContext.Emails.OrderBy(x => x.Info.Date).LastAsync();
         }
+
         /// <summary>
-        /// Количество сообщений по предикату.
+        ///     Количество сообщений по предикату.
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns>int</returns>
@@ -63,16 +68,18 @@ namespace EmailWebApi.Db.Repositories
         {
             return await _emailContext.Emails.CountAsync(predicate);
         }
+
         /// <summary>
-        /// Количество всех сообщений.
+        ///     Количество всех сообщений.
         /// </summary>
         /// <returns>int</returns>
         public async Task<int> GetCountAsync()
         {
             return await _emailContext.Emails.CountAsync();
         }
+
         /// <summary>
-        /// Добавить сообщение в базу данных.
+        ///     Добавить сообщение в базу данных.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
@@ -81,8 +88,9 @@ namespace EmailWebApi.Db.Repositories
             await _emailContext.Emails.AddAsync(entity);
             await _emailContext.SaveChangesAsync();
         }
+
         /// <summary>
-        /// Обновить сообщение в базе данных.
+        ///     Обновить сообщение в базе данных.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>

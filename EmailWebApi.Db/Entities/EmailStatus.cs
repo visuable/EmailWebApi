@@ -1,20 +1,22 @@
 ﻿namespace EmailWebApi.Db.Entities
 {
     /// <summary>
-    /// Статус сообщения.
+    ///     Статус сообщения.
     /// </summary>
     public enum EmailStatus
     {
         /// <summary>
-        /// Ошибка.
+        ///     Ошибка.
         /// </summary>
         Error,
+
         /// <summary>
-        /// Отправлено
+        ///     Отправлено
         /// </summary>
         Sent,
+
         /// <summary>
-        /// В очереди.
+        ///     В очереди.
         /// </summary>
         Query
     }

@@ -1,19 +1,19 @@
-﻿using System;
-
-namespace EmailWebApi.Db.Entities.Dto
+﻿namespace EmailWebApi.Db.Entities.Dto
 {
     public class ThrottlingStateDto
     {
         /// <summary>
-        /// Общее число запросов.
+        ///     Общее число запросов.
         /// </summary>
         public int Counter { get; set; }
+
         /// <summary>
-        /// Число запросов на последний адрес.
+        ///     Число запросов на последний адрес.
         /// </summary>
         public int LastAddressCounter { get; set; }
+
         /// <summary>
-        /// Последний адрес отправки.
+        ///     Последний адрес отправки.
         /// </summary>
         public string LastAddress { get; set; }
     }

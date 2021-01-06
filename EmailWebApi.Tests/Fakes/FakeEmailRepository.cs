@@ -52,7 +52,7 @@ namespace EmailWebApi.Tests.Fakes
 
         public Task<Email> LastAsync()
         {
-            return Task.FromResult(Emails.OrderBy(x => x.Info.Date).Last());
+            return Task.FromResult(Emails.OrderBy(x => x.Info?.Date).Last());
         }
 
         public Task<int> GetCountAsync()

@@ -3,7 +3,7 @@
     public class EmailStateDto
     {
         /// <summary>
-        /// Статус сообщения.
+        ///     Статус сообщения.
         /// </summary>
         public EmailStatus Status { get; set; }
     }

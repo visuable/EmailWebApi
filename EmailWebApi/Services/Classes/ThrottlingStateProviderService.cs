@@ -1,14 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Entities.Dto;
 using EmailWebApi.Db.Repositories;
+using EmailWebApi.Extensions;
 using EmailWebApi.Services.Interfaces;
 
 namespace EmailWebApi.Services.Classes
 {
     /// <summary>
-    /// Предоставляет развернутую информацию о совершившихся запросах.
+    ///     Предоставляет развернутую информацию о совершившихся запросах.
     /// </summary>
     public class ThrottlingStateProviderService : IThrottlingStateProviderService
     {
@@ -20,9 +20,11 @@ namespace EmailWebApi.Services.Classes
             _emailRepository = emailRepository;
             _dateTime = dateTime;
         }
+
         /// <summary>
-        /// Возвращает состояние.
+        ///     Возвращает состояние.
         /// </summary>
+        /// <remarks>Возвращает пустое состояние, если база данных пуста.</remarks>
         /// <returns>ThrottlingStateDto</returns>
         public async Task<ThrottlingStateDto> GetAsync()
         {
@@ -38,9 +40,7 @@ namespace EmailWebApi.Services.Classes
             }
             catch
             {
-                state.Counter = 0;
-                state.LastAddress = String.Empty;
-                state.LastAddressCounter = 0;
+                state.Empty();
             }
 
             return state;

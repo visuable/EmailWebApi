@@ -4,12 +4,12 @@ using EmailWebApi.Db.Entities;
 namespace EmailWebApi.Services.Interfaces
 {
     /// <summary>
-    /// Сервис отправки сообщений.
+    ///     Сервис отправки сообщений.
     /// </summary>
     public interface IEmailTransferService
     {
         /// <summary>
-        /// Отсылает сообщение и устанавливает его статус.
+        ///     Отсылает сообщение и устанавливает его статус.
         /// </summary>
         /// <param name="email"></param>
         /// <returns>EmailInfo</returns>

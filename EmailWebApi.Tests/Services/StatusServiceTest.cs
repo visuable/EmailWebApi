@@ -4,7 +4,6 @@ using AutoMapper;
 using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Entities.Settings;
 using EmailWebApi.Db.Repositories;
-using EmailWebApi.Services;
 using EmailWebApi.Services.Classes;
 using EmailWebApi.Services.Interfaces;
 using EmailWebApi.Tests.Fakes;

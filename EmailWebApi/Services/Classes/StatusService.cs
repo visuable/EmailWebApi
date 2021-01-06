@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace EmailWebApi.Services.Classes
 {
     /// <summary>
-    /// Сервис статистики приложения. 
+    ///     Сервис статистики приложения.
     /// </summary>
     public class StatusService : IStatusService
     {
@@ -20,11 +20,12 @@ namespace EmailWebApi.Services.Classes
             _logger = logger;
             _repository = repository;
         }
-        /// <summary>
-        /// Возвращает общую статистику приложения.
-        /// </summary>
-        /// <returns>ApplicationStateDto</returns>
 
+        /// <summary>
+        ///     Возвращает общую статистику приложения.
+        /// </summary>
+        /// <remarks>По умолчанию значения равны 0.</remarks>
+        /// <returns>ApplicationStateDto</returns>
         public async Task<ApplicationStateDto> GetApplicationState()
         {
             var applicationState = new ApplicationStateDto();
@@ -46,8 +47,9 @@ namespace EmailWebApi.Services.Classes
 
             return applicationState;
         }
+
         /// <summary>
-        /// Возвращает информацию о сообщении.
+        ///     Возвращает информацию о сообщении.
         /// </summary>
         /// <param name="info"></param>
         /// <returns>EmailState</returns>
