@@ -12,6 +12,8 @@ namespace EmailWebApi.Tests.Services
 {
     public class ThrottlingStateProviderServiceTests
     {
+        private readonly IServiceProvider _provider;
+
         public ThrottlingStateProviderServiceTests()
         {
             var services = new ServiceCollection();
@@ -20,8 +22,6 @@ namespace EmailWebApi.Tests.Services
             services.AddScoped<IThrottlingStateProviderService, ThrottlingStateProviderService>();
             _provider = services.BuildServiceProvider();
         }
-
-        private readonly IServiceProvider _provider;
 
         [Theory]
         [ClassData(typeof(EmailTransferServiceTests.EmailGenerator))]

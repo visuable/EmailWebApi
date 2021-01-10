@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EmailWebApi.Services.Classes;
 using EmailWebApi.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,14 +8,15 @@ namespace EmailWebApi.Tests.Services
 {
     public class SystemDateTimeServiceTests
     {
-        private IServiceProvider _provider;
-
         public SystemDateTimeServiceTests()
         {
             var services = new ServiceCollection();
             services.AddScoped<IDateTimeService, SystemDateTimeService>();
             _provider = services.BuildServiceProvider();
         }
+
+        private readonly IServiceProvider _provider;
+
         [Fact]
         public void Now()
         {

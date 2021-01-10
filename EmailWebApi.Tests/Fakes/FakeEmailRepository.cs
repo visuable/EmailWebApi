@@ -51,9 +51,10 @@ namespace EmailWebApi.Tests.Fakes
             try
             {
                 result = Emails.Count(predicate.Compile());
-
             }
-            catch { }
+            catch
+            {
+            }
 
             return Task.FromResult(result);
         }

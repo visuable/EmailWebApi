@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EmailWebApi.Db.Entities.Dto;
 using EmailWebApi.Extensions;
 using Xunit;
@@ -27,13 +24,13 @@ namespace EmailWebApi.Tests.Extensions
 
     public class ThrottlingStateDtoGenerator : IEnumerable<object[]>
     {
-        private object[] _data;
+        private readonly object[] _data;
 
         public ThrottlingStateDtoGenerator()
         {
             _data = new object[]
             {
-                new ThrottlingStateDto()
+                new ThrottlingStateDto
                 {
                     Counter = 1,
                     LastAddress = "test",

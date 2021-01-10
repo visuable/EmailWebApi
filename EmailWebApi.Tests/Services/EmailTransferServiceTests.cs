@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
-using EmailWebApi.Db.Entities.Dto;
 using EmailWebApi.Db.Repositories;
 using EmailWebApi.Services.Classes;
 using EmailWebApi.Services.Interfaces;
@@ -15,6 +14,8 @@ namespace EmailWebApi.Tests.Services
 {
     public class EmailTransferServiceTests
     {
+        private readonly IServiceProvider _provider;
+
         public EmailTransferServiceTests()
         {
             var services = new ServiceCollection();
@@ -26,8 +27,6 @@ namespace EmailWebApi.Tests.Services
 
             _provider = services.BuildServiceProvider();
         }
-
-        private readonly IServiceProvider _provider;
 
         [Theory]
         [ClassData(typeof(EmailGenerator))]
@@ -46,7 +45,7 @@ namespace EmailWebApi.Tests.Services
 
         public class EmailGenerator : IEnumerable<object[]>
         {
-            private object[] _data;
+            private readonly object[] _data;
 
             public EmailGenerator()
             {
@@ -62,9 +61,9 @@ namespace EmailWebApi.Tests.Services
                                 Body = "test",
                                 Save = true
                             },
-                            Title = "test",
+                            Title = "test"
                         },
-                        Info = new EmailInfo()
+                        Info = new EmailInfo
                         {
                             Date = DateTime.Now,
                             UniversalId = Guid.NewGuid()
@@ -72,6 +71,7 @@ namespace EmailWebApi.Tests.Services
                     }
                 };
             }
+
             public IEnumerator<object[]> GetEnumerator()
             {
                 yield return _data;

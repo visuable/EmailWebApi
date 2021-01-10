@@ -34,12 +34,10 @@ namespace EmailWebApi.Services.Classes
             try
             {
                 await _smtpSenderService.SendAsync(email);
-                _logger.LogDebug($"Сообщение {email.Id} отправлено");
                 email.SetState(EmailStatus.Sent);
             }
             catch
             {
-                _logger.LogError($"Сообщение {email.Id} не отправлено");
                 email.SetState(EmailStatus.Error);
             }
             finally

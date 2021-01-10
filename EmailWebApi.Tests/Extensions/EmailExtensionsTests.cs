@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
 using EmailWebApi.Extensions;
 using Xunit;
@@ -25,6 +22,7 @@ namespace EmailWebApi.Tests.Extensions
             //Assert
             Assert.Equal(status, email.State.Status);
         }
+
         [Fact]
         public void SetEmailInfo()
         {

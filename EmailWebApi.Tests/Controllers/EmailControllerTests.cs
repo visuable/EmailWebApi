@@ -52,20 +52,6 @@ namespace EmailWebApi.Tests.Controllers
         private readonly IServiceProvider _provider;
         private readonly IConfiguration _configuration;
 
-        [Fact]
-        public async void GetApplicationState()
-        {
-            //Arrange
-            var controller = _provider.GetRequiredService<EmailController>();
-
-            //Act
-            var result =
-                (await controller.GetApplicationState() as OkObjectResult)?.Value as JsonResponse<ApplicationStateDto>;
-
-            //Assert
-            Assert.Equal(-1, result?.Output.Total);
-        }
-
         [Theory]
         [ClassData(typeof(JsonRequestEmailInfoDtoGenerator))]
         public async void GetEmailState(JsonRequest<EmailInfoDto> request)
@@ -97,13 +83,13 @@ namespace EmailWebApi.Tests.Controllers
 
         public class JsonRequestEmailDtoGenerator : IEnumerable<object[]>
         {
-            private object[] _data;
+            private readonly object[] _data;
 
             public JsonRequestEmailDtoGenerator()
             {
                 _data = new object[]
                 {
-                    new JsonRequest<EmailDto>()
+                    new JsonRequest<EmailDto>
                     {
                         Input = new EmailDto
                         {
@@ -118,9 +104,10 @@ namespace EmailWebApi.Tests.Controllers
                                 Title = "test"
                             }
                         }
-                    },
+                    }
                 };
             }
+
             public IEnumerator<object[]> GetEnumerator()
             {
                 yield return _data;
@@ -130,26 +117,27 @@ namespace EmailWebApi.Tests.Controllers
             {
                 return GetEnumerator();
             }
-
         }
+
         public class JsonRequestEmailInfoDtoGenerator : IEnumerable<object[]>
         {
-            private object[] _data;
+            private readonly object[] _data;
 
             public JsonRequestEmailInfoDtoGenerator()
             {
                 _data = new object[]
                 {
-                    new JsonRequest<EmailInfoDto>()
+                    new JsonRequest<EmailInfoDto>
                     {
-                        Input = new EmailInfoDto()
+                        Input = new EmailInfoDto
                         {
                             Date = DateTime.Now,
                             UniversalId = Guid.Empty
                         }
-                    }, 
+                    }
                 };
             }
+
             public IEnumerator<object[]> GetEnumerator()
             {
                 yield return _data;
@@ -159,6 +147,20 @@ namespace EmailWebApi.Tests.Controllers
             {
                 return GetEnumerator();
             }
+        }
+
+        [Fact]
+        public async void GetApplicationState()
+        {
+            //Arrange
+            var controller = _provider.GetRequiredService<EmailController>();
+
+            //Act
+            var result =
+                (await controller.GetApplicationState() as OkObjectResult)?.Value as JsonResponse<ApplicationStateDto>;
+
+            //Assert
+            Assert.Equal(-1, result?.Output.Total);
         }
     }
 }

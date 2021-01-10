@@ -46,7 +46,6 @@ namespace EmailWebApi.Tests.Services
         private readonly IConfiguration _configuration;
 
         [Fact]
-
         public async Task Invoke()
         {
             //Arrange

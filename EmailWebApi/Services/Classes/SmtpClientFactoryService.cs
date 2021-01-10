@@ -2,6 +2,7 @@
 using System.Net.Mail;
 using EmailWebApi.Db.Entities.Settings;
 using EmailWebApi.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace EmailWebApi.Services.Classes
@@ -11,11 +12,13 @@ namespace EmailWebApi.Services.Classes
     /// </summary>
     public class SmtpClientFactoryService : ISmtpClientFactoryService
     {
+        private readonly ILogger<SmtpClientFactoryService> _logger;
         private readonly IOptions<SmtpSettings> _options;
 
-        public SmtpClientFactoryService(IOptions<SmtpSettings> options)
+        public SmtpClientFactoryService(IOptions<SmtpSettings> options, ILogger<SmtpClientFactoryService> logger)
         {
             _options = options;
+            _logger = logger;
         }
 
         /// <summary>
@@ -36,6 +39,7 @@ namespace EmailWebApi.Services.Classes
                 Host = value.Host,
                 Port = value.Port
             };
+            _logger.LogDebug("Создан экземпляр SmtpClient");
             return client;
         }
     }

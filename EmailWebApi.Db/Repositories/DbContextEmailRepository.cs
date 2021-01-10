@@ -12,13 +12,18 @@ namespace EmailWebApi.Db.Repositories
     /// <summary>
     ///     Репозиторий сообщений в базе данных.
     /// </summary>
-    public class DbContextEmailRepository : IRepository<Email>
+    public class DbContextEmailRepository : IRepository<Email>, IDisposable
     {
         private readonly EmailContext _emailContext;
 
         public DbContextEmailRepository(EmailContext emailContext)
         {
             _emailContext = emailContext;
+        }
+
+        public void Dispose()
+        {
+            _emailContext?.Dispose();
         }
 
         /// <summary>

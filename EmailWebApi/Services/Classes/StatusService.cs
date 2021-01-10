@@ -38,7 +38,6 @@ namespace EmailWebApi.Services.Classes
                     Query = await _repository.GetCountAsync(x => x.State.Status == EmailStatus.Query),
                     Sent = await _repository.GetCountAsync(x => x.State.Status == EmailStatus.Sent)
                 };
-                _logger.LogDebug("Возвращен статус приложения");
             }
             catch
             {
@@ -60,7 +59,6 @@ namespace EmailWebApi.Services.Classes
             {
                 result = (await _repository.FirstAsync(x =>
                     x.Info.UniversalId == info.UniversalId || x.Info.Date == info.Date)).State;
-                _logger.LogDebug("Получена информация по сообщению");
             }
             catch
             {
