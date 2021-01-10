@@ -12,7 +12,7 @@ namespace EmailWebApi.Extensions
         /// </summary>
         /// <remarks>Необходимо, если база данных не содержит значений.</remarks>
         /// <param name="throttlingState"></param>
-        public static void Empty(this ThrottlingStateDto throttlingState)
+        public static void Clear(this ThrottlingStateDto throttlingState)
         {
             throttlingState.Counter = 0;
             throttlingState.LastAddress = string.Empty;

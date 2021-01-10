@@ -13,9 +13,9 @@ using Xunit;
 
 namespace EmailWebApi.Tests.Services
 {
-    public class StatusServiceTest
+    public class StatusServiceTests
     {
-        public StatusServiceTest()
+        public StatusServiceTests()
         {
             var services = new ServiceCollection();
 

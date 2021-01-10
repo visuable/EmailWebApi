@@ -9,9 +9,9 @@ using Xunit;
 
 namespace EmailWebApi.Tests.Services
 {
-    public class SmtpClientFactoryServiceTest
+    public class SmtpClientFactoryServiceTests
     {
-        public SmtpClientFactoryServiceTest()
+        public SmtpClientFactoryServiceTests()
         {
             _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             var services = new ServiceCollection();

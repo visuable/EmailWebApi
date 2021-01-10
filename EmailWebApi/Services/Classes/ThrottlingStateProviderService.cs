@@ -40,7 +40,7 @@ namespace EmailWebApi.Services.Classes
             }
             catch
             {
-                state.Empty();
+                state.Clear();
             }
 
             return state;

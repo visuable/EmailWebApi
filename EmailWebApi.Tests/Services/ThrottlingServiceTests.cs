@@ -14,9 +14,9 @@ using Xunit;
 
 namespace EmailWebApi.Tests.Services
 {
-    public class ThrottlingServiceTest
+    public class ThrottlingServiceTests
     {
-        public ThrottlingServiceTest()
+        public ThrottlingServiceTests()
         {
             var services = new ServiceCollection();
 
@@ -45,6 +45,7 @@ namespace EmailWebApi.Tests.Services
         private readonly IConfiguration _configuration;
 
         [Fact]
+
         public async Task Invoke()
         {
             //Arrange
