@@ -33,10 +33,10 @@ namespace EmailWebApi.Services.Classes
             try
             {
                 var latestEmail = await _emailRepository.LastAsync();
-                state.Counter = await _emailRepository.GetCountAsync(x => _dateTime.Now >= offset);
+                state.Counter = await _emailRepository.GetCountAsync(x => x.Info.Date >= offset.DateTime);
                 state.LastAddress = latestEmail.Content.Address;
                 state.LastAddressCounter = await _emailRepository.GetCountAsync(x =>
-                    _dateTime.Now >= offset && x.Content.Address == latestEmail.Content.Address);
+                    x.Info.Date >= offset.DateTime && x.Content.Address == latestEmail.Content.Address);
             }
             catch
             {

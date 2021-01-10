@@ -19,12 +19,9 @@ namespace EmailWebApi.Tests.Fakes
         public async Task<EmailInfo> Send(Email email)
         {
             email.SetState(EmailStatus.Sent);
+            email.SetEmailInfo();
             await _repository.InsertAsync(email);
-            return new EmailInfo
-            {
-                Date = DateTime.Now,
-                UniversalId = Guid.NewGuid()
-            };
+            return email.Info;
         }
     }
 }

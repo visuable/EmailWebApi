@@ -55,6 +55,7 @@ namespace EmailWebApi
             services.AddScoped<IRepository<Email>, DbContextEmailRepository>();
             services.AddScoped<IDateTimeService, SystemDateTimeService>();
             services.AddScoped<IThrottlingStateProviderService, ThrottlingStateProviderService>();
+            services.AddScoped<ISmtpSenderService, SmtpSenderService>();
             services.AddScoped<ISmtpClientFactoryService, SmtpClientFactoryService>();
 
             services.AddDbContext<EmailContext>(x =>

@@ -62,7 +62,12 @@ namespace EmailWebApi.Tests.Services
                                 Body = "test",
                                 Save = true
                             },
-                            Title = "test"
+                            Title = "test",
+                        },
+                        Info = new EmailInfo()
+                        {
+                            Date = DateTime.Now,
+                            UniversalId = Guid.NewGuid()
                         }
                     }
                 };

@@ -10,6 +10,7 @@ using EmailWebApi.Services.Interfaces;
 using EmailWebApi.Tests.Fakes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace EmailWebApi.Tests.Services
@@ -51,28 +52,11 @@ namespace EmailWebApi.Tests.Services
             //Arrange
             var service = _provider.GetRequiredService<IThrottlingService>();
             var repository = _provider.GetRequiredService<IRepository<Email>>();
-            await repository.InsertAsync(new Email
-            {
-                Content = new EmailContent
-                {
-                    Address = "test@test.test"
-                },
-                Id = 1,
-                Info = new EmailInfo
-                {
-                    Date = DateTime.Now,
-                    UniversalId = Guid.NewGuid(),
-                    Id = 1
-                },
-                State = new EmailState
-                {
-                    Id = 1,
-                    Status = EmailStatus.Sent
-                }
-            });
+            var options = _provider.GetRequiredService<IOptions<ThrottlingSettings>>();
+            var counter = ++options.Value.Limit;
 
             //Act
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < counter; i++)
             {
                 var email = new Email
                 {

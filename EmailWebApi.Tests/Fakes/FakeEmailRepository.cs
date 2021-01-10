@@ -47,7 +47,15 @@ namespace EmailWebApi.Tests.Fakes
 
         public Task<int> GetCountAsync(Expression<Func<Email, bool>> predicate)
         {
-            return Task.FromResult(Emails.Count(predicate.Compile()));
+            var result = 0;
+            try
+            {
+                result = Emails.Count(predicate.Compile());
+
+            }
+            catch { }
+
+            return Task.FromResult(result);
         }
 
         public Task<Email> LastAsync()
