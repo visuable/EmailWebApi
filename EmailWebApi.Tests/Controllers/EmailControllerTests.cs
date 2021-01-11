@@ -64,7 +64,7 @@ namespace EmailWebApi.Tests.Controllers
                 (await controller.GetEmailState(request) as OkObjectResult)?.Value as JsonResponse<EmailStateDto>;
 
             //Assert
-            Assert.Equal(EmailStatus.Sent, result?.Output.Status);
+            Assert.Equal(EmailStatusDto.Sent, result?.Output.Status);
         }
 
         [Theory]

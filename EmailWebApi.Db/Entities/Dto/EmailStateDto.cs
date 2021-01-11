@@ -5,6 +5,6 @@
         /// <summary>
         ///     Статус сообщения.
         /// </summary>
-        public EmailStatus Status { get; set; }
+        public EmailStatusDto Status { get; set; }
     }
 }
