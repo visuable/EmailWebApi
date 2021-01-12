@@ -9,7 +9,7 @@ namespace EmailWebApi.Profiles
     {
         public EmailStatusToEmailStatusDtoProfile()
         {
-            CreateMap<EmailStatus, EmailStatusDto>().ConvertUsingEnumMapping(x => x.MapByValue()).ReverseMap();
+            CreateMap<EmailStatus, EmailStatusDto>().ConvertUsingEnumMapping(x => x.MapByName()).ReverseMap();
         }
     }
 }

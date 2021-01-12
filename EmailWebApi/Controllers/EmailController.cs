@@ -74,7 +74,7 @@ namespace EmailWebApi.Controllers
             var result = await _statusService.GetApplicationState();
             return Ok(new JsonResponse<ApplicationStateDto>
             {
-                Output = result
+                Output = _mapper.Map<ApplicationStateDto>(result)
             });
         }
     }

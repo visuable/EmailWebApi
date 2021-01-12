@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text;
+using System.Text.Json.Serialization;
 using AutoMapper;
 using EmailWebApi.Db.Database;
 using EmailWebApi.Db.Entities;
@@ -30,7 +31,8 @@ namespace EmailWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(x => x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             services.AddLogging();
             services.AddOptions();
             services.AddSwaggerGen(options =>

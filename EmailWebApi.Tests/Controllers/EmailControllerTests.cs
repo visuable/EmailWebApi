@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using AutoMapper;
 using EmailWebApi.Controllers;
-using EmailWebApi.Db.Database;
 using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Entities.Dto;
 using EmailWebApi.Db.Entities.Settings;
-using EmailWebApi.Services.Classes;
 using EmailWebApi.Services.Interfaces;
 using EmailWebApi.Tests.Fakes;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -35,16 +31,10 @@ namespace EmailWebApi.Tests.Controllers
 
             services.AddSingleton<EmailController>();
 
-            services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
-            services.Configure<ThrottlingSettings>(_configuration.GetSection("ThrottlingSettings"));
-
-            services.AddDbContext<EmailContext>(x =>
-                x.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
             services.AddAutoMapper(typeof(Startup));
 
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            services.AddHostedService<QueryExecutorService>();
+            services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
+            services.Configure<ThrottlingSettings>(_configuration.GetSection("ThrottlingSettings"));
 
             _provider = services.BuildServiceProvider();
         }
@@ -160,7 +150,7 @@ namespace EmailWebApi.Tests.Controllers
                 (await controller.GetApplicationState() as OkObjectResult)?.Value as JsonResponse<ApplicationStateDto>;
 
             //Assert
-            Assert.Equal(-1, result?.Output.Total);
+            Assert.Equal(0, result?.Output.Total);
         }
     }
 }

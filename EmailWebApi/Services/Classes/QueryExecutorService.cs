@@ -32,15 +32,15 @@ namespace EmailWebApi.Services.Classes
                 {
                     var emailTransferService = scope.ServiceProvider.GetRequiredService<IEmailTransferService>();
                     var emailRepository = scope.ServiceProvider.GetRequiredService<IRepository<Email>>();
+                    var options = scope.ServiceProvider.GetRequiredService<IOptions<QueryExecutorSettings>>();
                     var logger = scope.ServiceProvider.GetRequiredService<ILogger<QueryExecutorService>>();
-                    var settings = scope.ServiceProvider.GetRequiredService<IOptions<QueryExecutorSettings>>();
 
-                    var queryMessages = await emailRepository.GetAllAsync(x => x.State?.Status == EmailStatus.Query);
+                    var queryMessages = await emailRepository.GetAllAsync(x => x.State.Status == EmailStatus.Query);
                     foreach (var message in queryMessages)
                     {
                         logger.LogDebug($"Отправка {message.Id} в фоновом режиме");
                         await emailTransferService.Send(message);
-                        await Task.Delay(settings.Value.Delay, stoppingToken);
+                        await Task.Delay(options.Value.Delay, stoppingToken);
                     }
                 }
                 catch

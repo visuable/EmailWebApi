@@ -17,6 +17,7 @@ namespace EmailWebApi.Tests.Services
             var services = new ServiceCollection();
 
             services.AddOptions();
+            services.AddLogging();
             services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
             services.AddScoped<ISmtpClientFactoryService, SmtpClientFactoryService>();
 

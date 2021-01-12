@@ -50,9 +50,9 @@ namespace EmailWebApi.Db.Repositories
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<Email>> GetAllAsync(Func<Email, bool> predicate)
+        public async Task<IEnumerable<Email>> GetAllAsync(Expression<Func<Email, bool>> predicate)
         {
-            return (await _emailContext.Emails.ToListAsync()).Where(predicate);
+            return await _emailContext.Emails.Where(predicate).ToListAsync();
         }
 
         /// <summary>

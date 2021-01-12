@@ -40,9 +40,9 @@ namespace EmailWebApi.Tests.Fakes
             return Task.FromResult(Emails.FirstOrDefault());
         }
 
-        public Task<IEnumerable<Email>> GetAllAsync(Func<Email, bool> predicate)
+        public Task<IEnumerable<Email>> GetAllAsync(Expression<Func<Email, bool>> predicate)
         {
-            return Task.FromResult(Emails.Where(predicate));
+            return Task.FromResult(Emails.Where(predicate.Compile()));
         }
 
         public Task<int> GetCountAsync(Expression<Func<Email, bool>> predicate)

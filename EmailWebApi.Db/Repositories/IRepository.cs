@@ -37,7 +37,7 @@ namespace EmailWebApi.Db.Repositories
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        Task<IEnumerable<TEntity>> GetAllAsync(Func<TEntity, bool> predicate);
+        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Количество элементов по предикату.

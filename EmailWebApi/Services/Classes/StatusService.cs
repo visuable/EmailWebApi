@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
-using EmailWebApi.Db.Entities.Dto;
 using EmailWebApi.Db.Repositories;
 using EmailWebApi.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -26,12 +25,12 @@ namespace EmailWebApi.Services.Classes
         /// </summary>
         /// <remarks>По умолчанию значения равны 0.</remarks>
         /// <returns>ApplicationStateDto</returns>
-        public async Task<ApplicationStateDto> GetApplicationState()
+        public async Task<ApplicationState> GetApplicationState()
         {
-            var applicationState = new ApplicationStateDto();
+            var applicationState = new ApplicationState();
             try
             {
-                applicationState = new ApplicationStateDto
+                applicationState = new ApplicationState
                 {
                     Total = await _repository.GetCountAsync(),
                     Error = await _repository.GetCountAsync(x => x.State.Status == EmailStatus.Error),

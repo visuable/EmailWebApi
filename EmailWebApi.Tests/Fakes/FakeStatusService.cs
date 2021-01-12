@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
-using EmailWebApi.Db.Entities.Dto;
 using EmailWebApi.Services.Interfaces;
 
 namespace EmailWebApi.Tests.Fakes
@@ -15,14 +14,14 @@ namespace EmailWebApi.Tests.Fakes
             });
         }
 
-        public Task<ApplicationStateDto> GetApplicationState()
+        public Task<ApplicationState> GetApplicationState()
         {
-            return Task.FromResult(new ApplicationStateDto
+            return Task.FromResult(new ApplicationState
             {
-                Error = -1,
-                Query = -1,
-                Sent = -1,
-                Total = -1
+                Error = 0,
+                Query = 0,
+                Sent = 0,
+                Total = 0
             });
         }
     }

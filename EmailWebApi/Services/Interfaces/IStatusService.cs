@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
-using EmailWebApi.Db.Entities.Dto;
 
 namespace EmailWebApi.Services.Interfaces
 {
@@ -20,6 +19,6 @@ namespace EmailWebApi.Services.Interfaces
         ///     Возвращает общую статистику приложения.
         /// </summary>
         /// <returns>ApplicationStateDto</returns>
-        Task<ApplicationStateDto> GetApplicationState();
+        Task<ApplicationState> GetApplicationState();
     }
 }
