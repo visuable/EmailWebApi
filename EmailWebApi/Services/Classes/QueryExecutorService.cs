@@ -17,10 +17,14 @@ namespace EmailWebApi.Services.Classes
     public class QueryExecutorService : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ILogger<QueryExecutorService> _logger;
+        private readonly IOptions<QueryExecutorSettings> _options;
 
-        public QueryExecutorService(IServiceScopeFactory scopeFactory)
+        public QueryExecutorService(IServiceScopeFactory scopeFactory, ILogger<QueryExecutorService> logger, IOptions<QueryExecutorSettings> options)
         {
             _scopeFactory = scopeFactory;
+            _options = options;
+            _logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -32,21 +36,18 @@ namespace EmailWebApi.Services.Classes
                 {
                     var emailTransferService = scope.ServiceProvider.GetRequiredService<IEmailTransferService>();
                     var emailRepository = scope.ServiceProvider.GetRequiredService<IRepository<Email>>();
-                    var options = scope.ServiceProvider.GetRequiredService<IOptions<QueryExecutorSettings>>();
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<QueryExecutorService>>();
 
                     var queryMessages = await emailRepository.GetAllAsync(x => x.State.Status == EmailStatus.Query);
                     foreach (var message in queryMessages)
                     {
-                        logger.LogDebug($"Отправка {message.Id} в фоновом режиме");
+                        _logger.LogDebug($"Отправка {message.Id} в фоновом режиме");
                         await emailTransferService.Send(message);
-                        await Task.Delay(options.Value.Delay, stoppingToken);
+                        await Task.Delay(_options.Value.Delay, stoppingToken);
                     }
                 }
                 catch
                 {
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<QueryExecutorService>>();
-                    logger.LogError("Ошибка фоновой отправки сообщения");
+                    _logger.LogError("Ошибка фоновой отправки сообщения");
                 }
             }
         }
