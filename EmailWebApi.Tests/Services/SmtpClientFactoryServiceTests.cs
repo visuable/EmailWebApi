@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using EmailWebApi.Db.Entities.Settings;
 using EmailWebApi.Services.Classes;
 using EmailWebApi.Services.Interfaces;
@@ -11,36 +14,29 @@ namespace EmailWebApi.Tests.Services
 {
     public class SmtpClientFactoryServiceTests
     {
+        private readonly IServiceProvider _provider;
+        private readonly IConfiguration _configuration;
+
         public SmtpClientFactoryServiceTests()
         {
             _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             var services = new ServiceCollection();
-
             services.AddOptions();
-            services.AddLogging();
-            services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
             services.AddScoped<ISmtpClientFactoryService, SmtpClientFactoryService>();
-
+            services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
             _provider = services.BuildServiceProvider();
         }
-
-        private readonly IServiceProvider _provider;
-        private readonly IConfiguration _configuration;
-
         [Fact]
-        public void Create()
+        public async Task CreateAsync()
         {
             //Arrange
             var service = _provider.GetRequiredService<ISmtpClientFactoryService>();
-            var options = _provider.GetRequiredService<IOptions<SmtpSettings>>().Value;
 
             //Act
-            var client = service.Create();
+            var client = await service.CreateAsync();
 
             //Assert
-            Assert.Equal(client.Host, options.Host);
-            Assert.Equal(client.Port, options.Port);
-            Assert.True(client.EnableSsl);
+            Assert.NotNull(client);
         }
     }
 }

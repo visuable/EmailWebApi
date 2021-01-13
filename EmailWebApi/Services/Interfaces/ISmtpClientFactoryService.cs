@@ -1,16 +1,20 @@
-﻿using System.Net.Mail;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MailKit.Net.Smtp;
 
 namespace EmailWebApi.Services.Interfaces
 {
     /// <summary>
-    ///     Создает экземпляр SmtpClient с заданными настройками.
+    /// Создает SmtpClient.
     /// </summary>
     public interface ISmtpClientFactoryService
     {
         /// <summary>
-        ///     Создает SmtpClient.
+        /// Создает SmtpClient с заданными настройками.
         /// </summary>
-        /// <returns>SmtpClient</returns>
-        SmtpClient Create();
+        /// <returns>Экземпляр ISmtpClient</returns>
+        Task<ISmtpClient> CreateAsync();
     }
 }

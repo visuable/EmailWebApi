@@ -26,5 +26,18 @@
         ///     Почта отправителя.
         /// </summary>
         public string SenderEmail { get; set; }
+        /// <summary>
+        /// Имя отправителя.
+        /// </summary>
+        public string SenderName { get; set; }
+        /// <summary>
+        /// Тип текста в сообщении.
+        /// </summary>
+        /// <remarks>Обычный текст: Plain. Для HTML: Html</remarks>
+        public string TextType { get; set; }
+        /// <summary>
+        /// Имя файла для записи лога SmtpClient.
+        /// </summary>
+        public string LogFileName { get; set; }
     }
 }

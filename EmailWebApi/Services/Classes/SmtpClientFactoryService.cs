@@ -1,45 +1,25 @@
-﻿using System.Net;
-using System.Net.Mail;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using EmailWebApi.Db.Entities.Settings;
 using EmailWebApi.Services.Interfaces;
-using Microsoft.Extensions.Logging;
+using MailKit;
+using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 
 namespace EmailWebApi.Services.Classes
 {
-    /// <summary>
-    ///     Создает экземпляр SmtpClient с заданными настройками.
-    /// </summary>
     public class SmtpClientFactoryService : ISmtpClientFactoryService
     {
-        private readonly ILogger<SmtpClientFactoryService> _logger;
         private readonly IOptions<SmtpSettings> _options;
-
-        public SmtpClientFactoryService(IOptions<SmtpSettings> options, ILogger<SmtpClientFactoryService> logger)
+        public SmtpClientFactoryService(IOptions<SmtpSettings> options)
         {
             _options = options;
-            _logger = logger;
         }
-
-        /// <summary>
-        ///     Создает SmtpClient.
-        /// </summary>
-        /// <returns>SmtpClient</returns>
-        public SmtpClient Create()
+        public async Task<ISmtpClient> CreateAsync()
         {
-            var value = _options.Value;
-            var client = new SmtpClient
-            {
-                Credentials = new NetworkCredential
-                {
-                    UserName = value.Username,
-                    Password = value.Password
-                },
-                EnableSsl = true,
-                Host = value.Host,
-                Port = value.Port
-            };
-            _logger.LogDebug("Создан экземпляр SmtpClient");
+            var client = new SmtpClient(new ProtocolLogger(_options.Value.LogFileName));
             return client;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using EmailWebApi.Db.Entities;
 using EmailWebApi.Db.Repositories;
 using EmailWebApi.Extensions;
@@ -47,7 +48,10 @@ namespace EmailWebApi.Services.Classes
                 _logger.LogDebug($"Статус сообщения {email.State.Status}");
                 //TODO: что-то сделать с email.Id == 0.
                 if (email.Id == 0)
+                {
+                    if (!email.Content.Body.Save) email.Content.Body.Body = string.Empty;
                     await _repository.InsertAsync(email);
+                }
                 else
                     await _repository.UpdateAsync(email);
             }
